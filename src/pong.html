@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Sample: Ping pong</title>
+  <link rel="stylesheet" href="css/game.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/darkmode.css" />
+
+  <script src="js/game.js"></script>
+
+  <script src="term/terminal.js"></script>
+  <script src="term/terminal-autoextend.js"></script>
+
+  <script src="js/cookie.js"></script>
+  <script src="js/darkmode-cookie.js"></script>
+</head>
+
+<body>
+
+  <main>
+    <span style="float:right"><button onclick="terminalOpen()">Open terminal</button></span>
+    <h1>Game sample: Ping pong</h1>
+
+    <canvas></canvas>
+
+    <p><b><u>How to:</u></b><br>
+      Click game area to start/continue playing.<br>
+      Use the arrow keys up and down to move, or [W] and [S].<br>
+      Press spacebar or enter, to start a next round, or to pause/resume.</p>
+    <p>To restart the game: Open the terminal, type "restartgame" and press enter.</p>
+  </main>
+
+  <footer>
+    <p class="float-right">Author: Ward Truyen</p>
+  </footer>
+</body>
+
+</html>

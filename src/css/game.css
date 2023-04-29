@@ -1,0 +1,11 @@
+/* Author: Ward Truyen
+* Version: 1.0.0
+*/
+canvas{
+  border: 1px solid #00000060;
+  margin: auto;
+  display: block;
+}
+canvas:focus{
+  outline:none;
+}

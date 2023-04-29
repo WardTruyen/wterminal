@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>WTerminal fixed</title>
+    <!-- <link rel="stylesheet" href="css/terminal.css" /> -->
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/darkmode.css" />
+
+    <script src="term/fixed-terminal.js"></script>
+    <script src="term/terminal-autoextend.js"></script>
+    <script src="js/terminal-buttons.js"></script>
+
+    <script src="js/cookie.js"></script>
+    <script src="js/darkmode-cookie.js"></script>
+  </head>
+
+  <body>
+    <main>
+      <img style="display: none;" src="img/kitty.jpg" />
+      <span class="float-right">
+      <button id="btnDarkmode" onclick="btn_darkmode_switch();">dark mode</button>
+      </span>
+      <h1>Terminal:</h1>
+      <pre id=terminal-output></pre>
+      <form style="display: inline;" id="terminal-form">
+        <label for="terminal-input">Input:</label>
+        <input title="Terminal input" type="text" name="terminal-input" id="terminal-input" placeholder="help">
+        <input title="Submit input" type="submit" value="Enter">
+      </form>
+      <button title="Get help" onclick="btn_terminalHelp();">help</button>
+      <button title="Scroll to top" id="terminal-up">&uarr;</button>
+      <button title="Scroll to bottom" id="terminal-down">&darr;</button>
+      <span class="float-right"> 
+        Samples:
+        <input type="button" value="prompt" onclick="btn_promptSample();" />
+        <input type="button" value="kitty" onclick="btn_kittySample();" /> |
+        <input type="button" value="object" onclick="btn_printObjectSample();" /> |
+        <input title="Clear terminal" type="button" class="button-red" value="clear" onclick="terminalClear();" />
+      </span>
+    </main>
+    <footer>
+      <p class="float-right">Author: Ward Truyen</p>
+    </footer>
+  </body>
+
+</html>

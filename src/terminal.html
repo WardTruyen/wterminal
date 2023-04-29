@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>WTerminal</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/darkmode.css" />
+
+    <script src="term/terminal.js"></script>
+    <script src="term/terminal-autoextend.js"></script>
+
+    <script src="js/cookie.js"></script>
+    <script src="js/darkmode-cookie.js"></script>
+  </head>
+
+  <body>
+    <main>
+      <h1>Regular 'dropdown' terminal sample</h1>
+      <h2>About:</h2>
+      <p>This site acts as a sample for the dropdown terminal.</p>
+      <h2>Shortcuts:</h2>
+      <ul>
+        <li>Open: Backquote <b>`</b></li>
+        <li>Close: Escape</li>
+      </ul>
+      <h2>Utilities</h2>
+      <button onclick="terminalOpen()">Open terminal</button>
+      <button id="btnDarkmode" onclick="btn_darkmode_switch();">dark mode</button>
+    </main>
+    <footer>
+      <p class="float-right">Author: Ward Truyen</p>
+    </footer>
+  </body>
+
+</html>

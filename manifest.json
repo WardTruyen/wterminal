@@ -1,0 +1,24 @@
+{
+
+  "manifest_version": 2,
+  "name": "terminal",
+  "version": "1.0",
+  "description": "Adds a dropdown terminal to all webpages",
+  "author": "Ward Truyen",
+
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["term/terminal.js", "term/terminal-cookies.js", "term/terminal-variables.js", "term/terminal-eval.js",
+        "term/terminal-transfer.js", "term/terminal-featuretest.js", "term/terminal-stresstest.js", "term/terminal-forcelocals.js",
+        "term/terminal-timerdebug.js"],
+      "css": ["term/terminal.css"]
+    }
+  ]
+
+}
+
