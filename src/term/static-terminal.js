@@ -24,7 +24,7 @@ const TERMINAL_GLOBAL_TEST_VARIABLES = false; // when true: adds extra global te
 //start up values: auto insert & logo print
 const TERMINAL_AUTO_INSERT_HTML = false; // when true: automaticly inserts a hidden div containing the terminal in html.body
 const TERMINAL_AUTO_INSERT_CSS = true; // when true: automaticly inserts a stylesheet-link in the html.head
-const TERMINAL_CSS_LINK = "term/fixed-terminal.css"; // the link to auto insert when terminal initializes and TERMINAL_AUTO_INSERT_CSS = true
+const TERMINAL_CSS_LINK = "term/static-terminal.css"; // the link to auto insert when terminal initializes and TERMINAL_AUTO_INSERT_CSS = true
 const TERMINAL_PRINT_LOGO = true;
 //Options: open/close
 const TERMINAL_KEY_OPEN = 'Backquote'; // 'Backquote' is the event.code to look for on keyDown to open the terminal.
