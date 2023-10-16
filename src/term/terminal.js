@@ -1033,7 +1033,7 @@ const terminalInitialize = function() {
     bg = document.createElement('div');
     bg.id = TERMINAL_BACKGROUND_ID;
     bg.title = "Close terminal";
-    bg.innerHTML = `<div id="${TERMINAL_CONTAINER_ID}">
+    bg.innerHTML = `<div id="${TERMINAL_CONTAINER_ID}" title="Terminal">
   <pre title="Terminal output" id="${TERMINAL_OUTPUT_ID}"></pre>
   <form style="display: inline;" onsubmit="return false;" id="${TERMINAL_FORM_ID}">
     <label for="${TERMINAL_INPUT_ID}">Input:</label>
