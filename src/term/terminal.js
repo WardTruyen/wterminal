@@ -42,7 +42,7 @@ const TERMINAL_PRINT_COMMAND_RETURN = false; // when true: prints returned value
 const TERMINAL_MAX_HISTORY = 32; // the maximum length of the history we keep
 //Options: extensions
 const TERMINAL_PRINT_ALIAS_ADD = false; // when true: prints anny added alias
-const TERMINAL_PRINT_EXTENSION_ADD = false; // when true: prints anny extention command names that are added
+const TERMINAL_PRINT_EXTENSION_ADD = false; // when true: prints anny extension command names that are added
 //Options; TPO aka terminalPrintObject const
 const TPO_UNKNOWN_OBJECT_PRINT = false; // when true and printVar detects an empty unkown object, then it prints prototype stuff
 const TPO_OBJECT_PREFIX = "|  "; // when printVar is printing keys of an object, this is added in front.
@@ -374,7 +374,7 @@ const terminalPrintVar = function(obj, name = "var", prefix = "") {
 //#endregion
 
 //#region input
-const splitToArguements = function(str) {
+const splitToArguments = function(str) {
   function _countChar(str, char) {
     let index = str.indexOf(char);
     let count = 0;
@@ -665,7 +665,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
             terminalPrintLn("No help for command: \"" + argLine + "\"");
           }
         } else {
-          terminalPrintError("Help error: Unkown command: \"" + argLine + "\"");
+          terminalPrintError("Help error: Unknown command: \"" + argLine + "\"");
           // terminalCommandList.help.help();
         }
       }
@@ -688,7 +688,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
       if (argLine == '') {
         terminalPrintList(terminalOptions);
       } else {
-        let args = splitToArguements(argLine);
+        let args = splitToArguments(argLine);
         for (const element of args) {
           if (!element.includes("=")) {
             throw new Error("Option set error: argument is missing \"=\"");
@@ -803,7 +803,7 @@ const terminalAddCommand = function(name, run, help) {
     terminalPrintError("TerminalAddCommand error: Variable help must be a function or undefined.");
     return;
   }
-  if (terminalOptions.printExtensionAdd) terminalPrintLn("Command extention added: " + name);
+  if (terminalOptions.printExtensionAdd) terminalPrintLn("Command extension added: " + name);
   terminalCommandListExt[name] = { run: run, help: help };
 };
 

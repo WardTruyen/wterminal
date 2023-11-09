@@ -40,9 +40,9 @@ const TERMINAL_PRINT_ALIAS_CHANGE = false; // when true: prints the change when 
 const TERMINAL_PRINT_INNER_COMMANDS = false; // when true: prints the multiple-commands after && split
 const TERMINAL_PRINT_COMMAND_RETURN = false; // when true: prints returned value of executed command, if anny
 const TERMINAL_MAX_HISTORY = 32; // the maximum length of the history we keep
-//Options: extentions
+//Options: extensions
 const TERMINAL_PRINT_ALIAS_ADD = false; // when true: prints anny added alias
-const TERMINAL_PRINT_EXTENTION_ADD = false; // when true: prints anny extention command names that are added
+const TERMINAL_PRINT_EXTENSION_ADD = false; // when true: prints anny extension command names that are added
 //Options; TPO aka terminalPrintObject const
 const TPO_UNKNOWN_OBJECT_PRINT = false; // when true and printVar detects an empty unkown object, then it prints prototype stuff
 const TPO_OBJECT_PREFIX = "|  "; // when printVar is printing keys of an object, this is added in front.
@@ -66,8 +66,8 @@ const terminalOptions = {
   printInnerCommands: TERMINAL_PRINT_INNER_COMMANDS,
   printCommandReturn: TERMINAL_PRINT_COMMAND_RETURN,
   maxHistory: TERMINAL_MAX_HISTORY,
-  //extentions
-  printExtentionAdd: TERMINAL_PRINT_EXTENTION_ADD,
+  //extensions
+  printExtensionAdd: TERMINAL_PRINT_EXTENSION_ADD,
   printAliasAdd: TERMINAL_PRINT_ALIAS_ADD,
   //TPO aka terminalPrintObject const
   tpo_unknownObjectPrint: TPO_UNKNOWN_OBJECT_PRINT,
@@ -113,8 +113,8 @@ const terminalConst = function() {
   c.defaultPrintInnerCommands = TERMINAL_PRINT_INNER_COMMANDS;
   c.defaultPrintCommandReturn = TERMINAL_PRINT_COMMAND_RETURN;
   c.defaultMaxHistory = TERMINAL_MAX_HISTORY;
-  //Options: extentions
-  c.defaultPrintExtentionAdd = TERMINAL_PRINT_EXTENTION_ADD;
+  //Options: extensions
+  c.defaultPrintExtensionAdd = TERMINAL_PRINT_EXTENSION_ADD;
   c.defaultPrintAliasAdd = TERMINAL_PRINT_ALIAS_ADD;
   //Options: TPO aka terminalPrintObject const
   c.tpo_defaultUnknownObjectPrint = TPO_UNKNOWN_OBJECT_PRINT;
@@ -374,7 +374,7 @@ const terminalPrintVar = function(obj, name = "var", prefix = "") {
 //#endregion
 
 //#region input
-const splitToArguements = function(str) {
+const splitToArguments = function(str) {
   function _countChar(str, char) {
     let index = str.indexOf(char);
     let count = 0;
@@ -462,7 +462,7 @@ const terminalGetGlobal = function(gName) {
     terminalPrintError("GetGlobal error: Missing globalThis");
   } else {
     if (gName == '') {
-      terminalPrintError("GetGlobal error: Missing arguement: VARIABLE_NAME");
+      terminalPrintError("GetGlobal error: Missing argument: VARIABLE_NAME");
     } else {
       const names = gName.split(".");
       if (names.length == 1) {
@@ -523,9 +523,9 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
       terminalPrintLn("<b>Usage:</b>");
       terminalPrintLn("alias               //Prints all aliases");
       terminalPrintLn("<b>About alias usage:</b>");
-      terminalPrintLn("An alias-name has no spaces, but the alias-value can have multipe spaces.");
+      terminalPrintLn("An alias-name has no spaces, but the alias-value can have multiple spaces.");
       terminalPrintLn("When the terminal detects an alias-name as the first input word, it gets replaced to the alias-value.");
-      terminalPrintLn("When the alias-value contains a space, then the arguements will be");
+      terminalPrintLn("When the alias-value contains a space, then the arguments will be");
       terminalPrintLn("  joined with the alias-value without a space joining them.");
       terminalPrintLn("<b>Samples of using an alias:</b>");
       terminalPrintLn("?                   //Changes to: `help`");
@@ -585,7 +585,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
       terminalPrintLn(argLine);
     },
     help: function() {
-      terminalPrintLn("Prints arguements.");
+      terminalPrintLn("Prints arguments.");
     }
   },
   error: {
@@ -593,7 +593,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
       terminalPrintError(argLine);
     },
     help: function() {
-      terminalPrintLn("Prints arguements in <span style='color:red'>red</span>.");
+      terminalPrintLn("Prints arguments in <span style='color:red'>red</span>.");
     }
   },
   exit: {
@@ -611,7 +611,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
         terminalPrintLn(`Open the terminal with ${(terminalOptions.keyOpenCtrl ? "CTRL + " : "")}the ${terminalOptions.keyOpen}-key.`);
         terminalPrintLn(`Close the terminal with the ${terminalOptions.keyClose}-key.`);
         terminalPrintLn(`Use the ${terminalOptions.keyHistory}-key to get previous command.`)
-        terminalPrintLn(`Enter a command, optionaly some arguements, and press enter or submit.`);
+        terminalPrintLn(`Enter a command, optionaly some arguments, and press enter or submit.`);
         terminalPrintLn("<b>Basic commands:</b>");
         Object.keys(terminalCommandList).forEach((command, i) => {
           if (i == 0) {
@@ -624,7 +624,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
           }
         });
         terminalPrintLn();
-        terminalPrintLn("<b>Extention commands:</b>");
+        terminalPrintLn("<b>Extension commands:</b>");
         Object.keys(terminalCommandListExt).forEach((command, i) => {
           if (i == 0) {
             terminalPrint("  " + command);
@@ -637,7 +637,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
         });
         terminalPrintLn();
         terminalPrintLn("<b>Using help:</b>");
-        terminalPrintLn("help [COMMAND_NAME] //Prints help, optionaly on a command");
+        terminalPrintLn("help [COMMAND_NAME] //Prints help, optionally on a command");
         terminalPrintLn("<b>Samples of help:</b>");
         terminalPrintLn("help                //Prints this help again.");
         terminalPrintLn("help help           //Prints help on the help command.");
@@ -650,7 +650,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
         terminalPrintLn("Multiple commands can be chained, separated by `&&`.");
         terminalPrintLn("<b>Advanced samples:</b>");
         terminalPrintLn("const version && printvar terminal");
-        terminalPrintLn("  //Gets version value, automaticly stores it in terminal.lastResult");
+        terminalPrintLn("  //Gets version value, automatically stores it in terminal.lastResult");
         terminalPrintLn("  //  then prints out the terminal variable (you will see lastResult in there)");
         terminalPrintLn("dovar document.getElementById " + TERMINAL_CONTAINER_ID + " && printvar terminal.lastResult.children")
         terminalPrintLn("  //Gets the element with id " + TERMINAL_CONTAINER_ID);
@@ -665,7 +665,7 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
             terminalPrintLn("No help for command: \"" + argLine + "\"");
           }
         } else {
-          terminalPrintError("Help error: Unkown command: \"" + argLine + "\"");
+          terminalPrintError("Help error: Unknown command: \"" + argLine + "\"");
           // terminalCommandList.help.help();
         }
       }
@@ -688,10 +688,10 @@ const terminalCommandList = Object.freeze({ //freeze object to make it immutable
       if (argLine == '') {
         terminalPrintList(terminalOptions);
       } else {
-        let args = splitToArguements(argLine);
+        let args = splitToArguments(argLine);
         for (const element of args) {
           if (!element.includes("=")) {
-            throw new Error("Option set error: arguement is missing \"=\"");
+            throw new Error("Option set error: argument is missing \"=\"");
           }
           const keyValuePair = element.split("=");
           const name = keyValuePair[0];
@@ -803,7 +803,7 @@ const terminalAddCommand = function(name, run, help) {
     terminalPrintError("TerminalAddCommand error: Variable help must be a function or undefined.");
     return;
   }
-  if (terminalOptions.printExtentionAdd) terminalPrintLn("Command extention added: " + name);
+  if (terminalOptions.printExtensionAdd) terminalPrintLn("Command extension added: " + name);
   terminalCommandListExt[name] = { run: run, help: help };
 };
 
@@ -834,7 +834,7 @@ const terminalCommand = function(cmdLine, isSuperCommand = false) {
     }
     if (al !== undefined) {
       if (al.includes(" ")) {
-        //new command and arguement
+        //new command and argument
         al = al.split(" ");
         command = al.shift();
         argLine = (al.join(' ') + argLine).trim();
