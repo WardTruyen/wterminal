@@ -27,7 +27,7 @@
           } else if (argLine == '') {
             terminalPrintError("Do error: No name");
           } else {
-            let args = splitToArguements(argLine);
+            let args = splitToArguments(argLine);
             const verbal = args.includes("-v");
             if (verbal) {
               args = args.filter(e => e !== '-v');
@@ -47,13 +47,13 @@
           }
         },
         help: function() {
-          terminalPrintLn("Runs given global function with arguements, and returns result.");
+          terminalPrintLn("Runs given global function with arguments, and returns result.");
           terminalPrintLn("<b>Usage:</b>");
-          terminalPrintLn("dovar FUNCTION_NAME [ARGUEMENTS]                 //Runs function FUNCTION_NAME with optional ARGUEMENTS");
-          terminalPrintLn("dovar -v FUNCTION_NAME [ARGUEMENTS]              //Same as above but prints result too.");
+          terminalPrintLn("dovar FUNCTION_NAME [ArgumentS]                 //Runs function FUNCTION_NAME with optional ArgumentS");
+          terminalPrintLn("dovar -v FUNCTION_NAME [ArgumentS]              //Same as above but prints result too.");
           terminalPrintLn("<b>Samples:</b>");
-          terminalPrintLn("dovar window.open https://developer.mozilla.org  //Runs function window.open() with the url as arguement");
-          terminalPrintLn("dovar -v document.getElementById terminal-up     //Runs function document.getElementById with terminal-up as arguement")
+          terminalPrintLn("dovar window.open https://developer.mozilla.org  //Runs function window.open() with the url as argument");
+          terminalPrintLn("dovar -v document.getElementById terminal-up     //Runs function document.getElementById with terminal-up as argument")
           terminalPrintLn("dovar document.body.remove                       //Warning: removes all page content");
         }
       },
@@ -62,10 +62,10 @@
           if (globalThis === undefined) {
             terminalPrintError("Getvar error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("Getvar error: Missing arguement: VARIABLE_NAME");
+            terminalPrintError("Getvar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
-            const args = splitToArguements(argLine);
+            const args = splitToArguments(argLine);
             for (const gName of args) {
               result[gName] = terminalGetGlobal(gName);
             }
@@ -113,10 +113,10 @@
           if (globalThis === undefined) {
             terminalPrintError("LogVar error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("LogVar error: Missing arguement: VARIABLE_NAME");
+            terminalPrintError("LogVar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
-            let args = splitToArguements(argLine);
+            let args = splitToArguments(argLine);
             const returnResult = args.includes("-r");
             if (returnResult) {
               args = args.filter(e => e !== '-r');
@@ -141,10 +141,10 @@
           if (globalThis === undefined) {
             terminalPrintError("PrintVar error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("PrintVar error: Missing arguement: VARIABLE_NAME");
+            terminalPrintError("PrintVar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
-            let args = splitToArguements(argLine);
+            let args = splitToArguments(argLine);
             const returnResult = args.includes("-r");
             if (returnResult) {
               args = args.filter(e => e !== '-r');
@@ -181,9 +181,9 @@
           if (globalThis === undefined) {
             terminalPrintError("RemoveVar error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("RemoveVar error: Missing arguements");
+            terminalPrintError("RemoveVar error: Missing arguments");
           } else {
-            let args = splitToArguements(argLine);
+            let args = splitToArguments(argLine);
             const keys = Object.keys(globalThis);
             const verbal = args.includes("-v");
             if (verbal) {
@@ -265,7 +265,7 @@
             if (argLine == '') {
               terminalPrintError("Setvar error: no name");
             } else {
-              let args = splitToArguements(argLine);
+              let args = splitToArguments(argLine);
               for (const element of args) {
                 const keyValuePair = element.split("=");
                 const names = keyValuePair[0].split(".");
