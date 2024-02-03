@@ -277,7 +277,7 @@ const terminalPrintVar = function(obj, name = "var", prefix = "") {
   function _printObject(obj, name, prefix = "", lvl = 0) {
     if (obj === null) {
       terminalPrintLn(prefix, name, " = null");
-    } else if (lvl > terminalOptions.maxDepth) {
+    } else if (lvl > terminalOptions.tpo_maxDepth) {
       terminalPrintLn(prefix, name, " = {} max depth reached(" + lvl + ")");
     } else {
       const keys = Object.keys(obj);
@@ -337,10 +337,18 @@ const terminalPrintVar = function(obj, name = "var", prefix = "") {
           if (obj instanceof Array) {
             terminalPrintLn(prefix, name, " = [ length: ", keys.length);
           } else {
-            terminalPrintLn(prefix, name, " = (", _getObjType(obj), ")[ length: ", keys.length);
+            let t = "unknown Object";
+            try{
+              t = _getObjType(obj);
+            }catch(e){}
+            terminalPrintLn(prefix, name, " = (", t, ")[ length: ", keys.length);
           }
         } else {
-          terminalPrintLn(prefix, name, " = (", _getObjType(obj), "){ length: ", keys.length);
+          let t = "unknown Object";
+          try{
+            t = _getObjType(obj);
+          }catch(e){}
+          terminalPrintLn(prefix, name, " = (", t, "){ length: ", keys.length);
         }
         if (lvl !== 0 && keys.length > TPO_INNER_MAX_LENGTH) {
           terminalPrintLn(prefix + terminalOptions.tpo_objectPrefix, "(too long)");
