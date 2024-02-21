@@ -22,13 +22,20 @@
     <span style="float:right"><button onclick="terminalOpen()">Open terminal</button></span>
     <h1>Game sample: Ping pong</h1>
 
-    <canvas></canvas>
+      <div id="game-area"></div>
 
     <p><b><u>How to:</u></b><br>
-      Click game area to start/continue playing.<br>
       Use the arrow keys up and down to move, or [W] and [S].<br>
       Press spacebar or enter, to start a next round, or to pause/resume.</p>
-    <p>To restart the game: Open the terminal, type "restartgame" and press enter.</p>
+    <p>To restart the game use the buttons below. Or open the terminal, type "restartgame" and press enter.</p>
+        
+    <button onclick="startPingPong('game-area', 480, 320, 1);">start normal</button>
+    <button onclick="startPingPong('game-area', 640, 480, 1);">start large</button>
+    <button onclick="startPingPong('game-area', 320, 240, 2);">start zoomed</button>
+
+    <script>
+      startPingPong('game-area', 480, 320, 1);
+      </script>
   </main>
 
   <footer>
