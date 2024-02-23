@@ -266,6 +266,10 @@ const terminalPrintVar = function(obj, name = "var", prefix = "") {
     if (obj !== null) {
       if (obj instanceof Date) {
         objType += " Date";
+      } else if (obj instanceof Float32Array) {
+        objType += " Float32Array";
+      } else if (obj instanceof Float64Array) {
+        objType += " Float64Array";
       } else {
         objType = Object.getPrototypeOf(obj).toString().replace('[', '').replace(']', '');
       }
