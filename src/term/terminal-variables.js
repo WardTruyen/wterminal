@@ -48,10 +48,10 @@
         },
         help: function(term) {
           term.printLn("Runs given global function with arguments, and returns result.");
-          term.printLn("<b>Usage:</b>");
+          term.printBold("Usage:");
           term.printLn("dovar FUNCTION_NAME [ArgumentS]                 //Runs function FUNCTION_NAME with optional ArgumentS");
           term.printLn("dovar -v FUNCTION_NAME [ArgumentS]              //Same as above but prints result too.");
-          term.printLn("<b>Samples:</b>");
+          term.printBold("Samples:");
           term.printLn("dovar window.open https://developer.mozilla.org  //Runs function window.open() with the url as argument");
           term.printLn("dovar -v document.getElementById terminal-up     //Runs function document.getElementById with terminal-up as argument")
           term.printLn("dovar document.body.remove                       //Warning: removes all page content");
@@ -80,9 +80,9 @@
         help: function(term) {
           term.printLn("Gets a global variable and returns it.");
           term.printLn("The returned result will be found in terminal.lastResult")
-          term.printLn("<b>Usage:</b>");
+          term.printBold("Usage:");
           term.printLn("getvar VARIABLE_NAME");
-          term.printLn("<b>Samples:</b>");
+          term.printBold("Samples:");
           term.printLn("getvar terminal                  //Returns terminal");
           term.printLn("getvar terminal.version          //Returns terminal.version");
           term.printLn("getvar var1 var2 var3            //Returns an object with var1 var2 and var3 keys and their global found value.");
@@ -164,10 +164,10 @@
         },
         help: function(term) {
           term.printLn("Prints value of global variable.");
-          term.printLn("<b>Usage:</b>");
+          term.printBold("Usage:");
           term.printLn("printvar VARIABLE_NAME           //Prints variable, returns nothing.");
           term.printLn("printvar -r VARIABLE_NAME        //Prints variable, returns variable.");
-          term.printLn("<b>Samples:</b>");
+          term.printBold("Samples:");
           term.printLn("printvar terminal                //Prints terminal");
           term.printLn("printvar terminal.version        //Prints terminal.version");
           term.printLn("printvar -r terminal.lastResult  //Prints terminal.lastResult and returns it.");
@@ -243,13 +243,13 @@
         },
         help: function(term) {
           term.printLn("Removes global variables.");
-          term.printLn("<b>Usage:</b>");
+          term.printBold("Usage:");
           term.printLn("removevar -v ...            //Prints removing VARIABLE_NAME.");
           term.printLn("removevar -f                //Removes all global variables that are not a parent redefinition or native function.");
           term.printLn("removevar -n                //Removes all null or undefined global variables.");
           term.printLn("removevar -a                //Removes ALL global variables.");
           term.printLn("removevar VARIABLE_NAMES    //Removes the global variables provided.")
-          term.printLn("<b>Samples:</b>");
+          term.printBold("Samples:");
           term.printLn("removevar terminal          //Removes the global variable terminal.");
           term.printLn("removevar var1 var2         //Removes the 2 global variables var1 and var2.");
           term.printLn("removevar terminal.history  //Removes history from terminal.");
@@ -281,7 +281,7 @@
                       let rem = names.length - 1 - i;
                       names.splice(names.length - rem, rem);
                       let name = names.join('.');
-                      term.print('<span style="color:red;">Variable is not an object: </span>');
+                      term.printError(`Variable ${keyValuePair[0]} is not an object!`);
                       term.printVar(obj[names[i]], name);
                       return;
                     };
@@ -294,9 +294,9 @@
           }
         },
         help: function(term) {
-          term.printLn("<b>Usage:</b>");
+          term.printBold("Usage:");
           term.printLn("setvar NAME=VALUE                                //Sets VALUE to a global variable, NAME, and returns it.");
-          term.printLn("<b>Samples:</b>");
+          term.printBold("Samples:");
           term.printLn("setvar terminal                                  //Sets terminal to undefined");
           term.printLn("setvar terminal.version=prehistoric              //Sets terminal.version to string `prehistoric`");
           term.printLn("setvar myNumber=8                                //Sets myNumber to number 8");
