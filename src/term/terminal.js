@@ -1256,6 +1256,15 @@ three`;
 }
 createTerminalGlobal();
 
+const instalDropdownTerminal = function() {
+  if (WTerminal.terminals.dropdown) return;
+  if (document.body) {
+    new WTerminal('dropdown', null, null);
+  } else {
+    window.addEventListener("load", () => new WTerminal('dropdown', null, null));
+  }
+}
+
 if (TERMINAL_AUTO_INSERT_CSS) {
   if (document.getElementById(TERMINAL_CSS_LINK_ID) === null) {
     document.head.append(createElement(
@@ -1264,15 +1273,6 @@ if (TERMINAL_AUTO_INSERT_CSS) {
 }
 if (TERMINAL_AUTO_INSERT_DROPDOWN) {
   instalDropdownTerminal();
-}
-
-const instalDropdownTerminal = function() {
-  if (WTerminal.terminals.dropdown) return;
-  if (document.body) {
-    new WTerminal('dropdown', null, null);
-  } else {
-    window.addEventListener("load", () => new WTerminal('dropdown', null, null));
-  }
 }
 //#endregion
 
@@ -1288,6 +1288,10 @@ const terminalPrint = function(...args) {
 }
 const terminalPrintLn = function(...args) {
   WTerminal.printLn(...args);
+}
+
+const terminalOpen = function(){
+  WTerminal.terminals.dropdown.terminalOpen();
 }
 
 const getTerminal = function(name) {
