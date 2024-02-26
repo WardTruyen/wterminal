@@ -6,20 +6,23 @@
 
 {// this code block hides the variables below from other scripts.
   const initTerminalStressTestCommand = function() {
-    const help = function() {
-      terminalPrintLn("Runs a stress test on the terminal.");
+    const help = function(term) {
+      term.printLn("Runs a stress test on the terminal.");
     };
-    const run = function(argLine) {
+    const run = function(term, argLine) {
       const testArgLine = function(str) {
-        terminalPrintVar(splitToArguements(str), '`' + argLine + '`.<b>splitToArguements()</b>');
+        term.printVar(splitToArguements(str), '`' + argLine + '`.<b>splitToArguements()</b>');
       };
       if (argLine != '') testArgLine(argLine);
-      terminalCommand("? && alias && const && gg", true);
-      terminalCommand('gdb && gresult .2 && gresult .children.0 && result .children.0.innerHTML', true);
-      terminalCommand('dovar document.getElementById ' + TERMINAL_OUTPUT_ID + ' && result .innerHTML', true);
+      term.terminalCommand("? && alias && const && option && date && time && uptime && starttime && echo OK", true);
+      term.terminalCommand("? help && help alias && ? const && ? option && ? date && ? time && ? uptime", true);
+      term.terminalCommand("thisterminal && gg", true);
+      term.terminalCommand('gdb && result .2 && result .children.0 && result .innerHTML', true);
+      term.terminalCommand('eval 10000+4*(1+4*10) + Math.PI', true);
+      term.terminalCommand('dovar alert "finished stresstest"', true);
+      // term.terminalCommand('dovar document.getElementById ' + TERMINAL_OUTPUT_ID + ' && result .innerHTML', true);
 
-      if (terminal === undefined) return;
-      return terminal.lastResult;
+      return term.lastResult;
     };
     //add command
     if (terminalAddCommand === undefined) {

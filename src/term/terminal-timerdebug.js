@@ -5,29 +5,29 @@
 */
 {
   const addExtention = function() {
-    const help = function() {
-      terminalPrintLn("Runs a test (nothing).");
+    const help = function(term) {
+      term.printLn("Installs a logger at setTimeout and setInterval.");
     }
-    const run = function() {
+    const run = function(term) {
       //capture setTimeout
-      const oldSetTimeout = globalThis.setTimeout;
-      globalThis.setTimeout = function() {
+      const oldSetTimeout = setTimeout;
+      setTimeout = function() {
         const e = new Error('Just for stack trace');
         const result = oldSetTimeout.apply(this, arguments);
-        if (terminalPrintLn && terminalOutput) terminalPrintLn(`New timeout ${result} registered from: ${e.stack}`);
+        if (term) term.printLn(`New timeout ${result} registered.\n from: ${e.stack}`);
         else console.log(`New timeout ${result} registered from: ${e.stack}`);
         return result;
       };
       //capture setInterval
-      const oldSetInterval = globalThis.setInterval;
-      globalThis.setInterval = function() {
+      const oldSetInterval = setInterval;
+      setInterval = function() {
         const e = new Error('Just for stack trace');
         const result = oldSetInterval.apply(this, arguments);
-        if (terminalPrintLn && terminalOutput) terminalPrintLn(`New interval ${result} registered from: ${e.stack}`);
+        if (term) term.printLn(`New interval ${result} registered.\n from: ${e.stack}`);
         else console.log(`New interval ${result} registered from: ${e.stack}`);
         return result;
       }
-      terminalPrintLn("activated");
+      term.printLn("activated");
     }
     terminalAddCommand("timerdebug", run, help);
     //add alias

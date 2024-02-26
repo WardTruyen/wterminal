@@ -13,10 +13,10 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/term/addon-terminal.js", "src/term/terminal-cookies.js", "src/term/terminal-variables.js", "src/term/terminal-eval.js",
+      "js": ["src/term/terminal.js", "src/term/addonterminal.js", "src/term/terminal-cookies.js", "src/term/terminal-variables.js", "src/term/terminal-eval.js",
         "src/term/terminal-transfer.js", "src/term/terminal-featuretest.js", "src/term/terminal-stresstest.js", "src/term/terminal-forcelocals.js",
         "src/term/terminal-timerdebug.js"],
-      "css": ["src/term/addon-terminal.css"]
+      "css": ["src/term/terminal.css"]
     }
   ]
 

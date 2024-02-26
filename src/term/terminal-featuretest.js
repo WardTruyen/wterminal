@@ -5,11 +5,11 @@
 */
 {
   const addExtention = function() {
-    const help = function() {
-      terminalPrintLn("Runs a test (nothing).");
+    const help = function(term) {
+      term.printLn("Runs a test (nothing).");
     }
-    const run = function() {
-      terminalPrintLn("Feature test warning: Under construction, can have unexpected results, errors and crashes.");
+    const run = function(term) {
+      term.printLn("Feature test warning: Under construction, can have unexpected results, errors and crashes.");
       // todo: add test ... like throw errors and stuff
 
       // throw {name : "NotImplementedError", message : "too lazy to implement"};

@@ -5,17 +5,19 @@
 */
 {
   const initTerminalEvalCommand = function() {
-    const help = function() {
-      terminalPrintLn("Uses the function eval(string) on the argLine");
+    const help = function(term) {
+      term.printLn("Uses the function eval(string) on the argLine");
     }
-    const run = function(argLine) {
+    const run = function(term, argLine) {
       //todo: test (local) variable grabbing == works
       try {
         const result = eval(argLine);
-        terminalPrintVar(result, '`' + argLine + '`');
+        term.printVar(result, '`' + argLine + '`');
         return result;
       } catch (error) {
-        terminalPrintVar(error, `<span style='color:red;'>Eval error: \`${argLine}\`</span>`);
+        // term.printVar(error, `<span style='color:red;'>Eval error: \`${argLine}\`</span>`);
+        term.printError(`Eval error: \`${argLine}\` -> ${error.message}`);
+        // throw error;
       }
     };
     //add command

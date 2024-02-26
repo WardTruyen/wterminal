@@ -11,6 +11,7 @@ const DARKMODE_KEY = "darkmode";
 
 //#region init
 window.addEventListener("load", function () {
+  if (typeof terminalAddCommand === "function") terminalAddCommand("darkmode", btn_darkmode_switch);
   if( !doCookiesWork() ){
     console.log("Darkmode Warning: Cookies not working!");
     terminalPrintError( "Darkmode Warning: Cookies not working!" );
@@ -52,7 +53,6 @@ function btn_darkmode_switch(){
     btn.innerHTML = "dark mode"; // moon
   }
 }
-terminalAddCommand("darkmode", btn_darkmode_switch);
 
 /*  About: this removes the style attribute(s) that might be added by 
   * the "inver colors" button/feature whitch breaks the use of the darkmode-css-class
