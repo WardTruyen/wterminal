@@ -1,6 +1,6 @@
 // Our variables we're using for setup
 const DEBUG_FRAMERATE = false;
-const DEBUG_PARENT_OBJECT = true;
+const DEBUG_PARENT_OBJECT = false;
 const AUTO_CONTINUE_ON_FOCUS = false;
 const UPDATE_INTERVAL = 1000 / 60; // go for 60 fps
 
@@ -121,7 +121,10 @@ class PingPong {
     this.canvasEl.focus();
     // this.isFocused = true;
     this.startRunning(() => this.updateCanvas());
-    if (typeof terminalAddCommand === "function") terminalAddCommand("restartgame", () => this.terminalRestartGame());
+    if (typeof terminalAddCommand === "function"){
+      terminalAddCommand("restartpong", (t) => this.terminalRestartGame(t));
+      terminalAddCommand("printpong", (t) => t.printVar(this,"pong"));
+    }
   }
 
   newGame() {
@@ -153,8 +156,12 @@ class PingPong {
     this.newGame();
   }
 
-  terminalRestartGame() {
-    terminalClose();
+  terminalPrintGame(term){
+    term.printVar(this,"pong");
+  }
+
+  terminalRestartGame(term) {
+    term.terminalClose();
     this.restartGame();
     // this.canvasEl.focus();
     setTimeout(() => { this.canvasEl.focus(); this.pausePlayGame(); }, 200);

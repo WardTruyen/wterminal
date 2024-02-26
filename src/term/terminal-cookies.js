@@ -5,7 +5,7 @@
 
 if (typeof terminalAddCommand === "function") {
   //getcookie
-  terminalAddCommand("getcookie", (argLine) => {
+  terminalAddCommand("getcookie", (term, argLine) => {
     function getCookie(name, defaultValue = undefined) {
       if (name === null || name === undefined || typeof name != "string" || name == '') {
         console.log('error: cookie needs a name');
@@ -21,7 +21,7 @@ if (typeof terminalAddCommand === "function") {
     return getCookie(...splitToArguements(argLine));
   });
   //setcookie
-  terminalAddCommand("setcookie", (argLine) => {
+  terminalAddCommand("setcookie", (term, argLine) => {
     function setCookie(name, value = 1, days = 7) {
       let date = new Date();
       date.setDate(date.getDate() + days); // add x days to date
@@ -30,38 +30,38 @@ if (typeof terminalAddCommand === "function") {
     return setCookie(...splitToArguements(argLine));
   });
   //removecookies
-  terminalAddCommand("removecookies", function() {
+  terminalAddCommand("removecookies", function(term) {
     function removeCookie(name) {
       document.cookie = name + "=0; max-age=-1" + "; SameSite=strict; Secure";
     }
     if (document.cookie == '') {
-      terminalPrintError("No cookies found.");
+      term.printError("No cookies found.");
       return;
     }
     const cookies = document.cookie.split(/; */);
-    terminalPrintLn("Cookies found: " + cookies.length);
+    term.printLn("Cookies found: " + cookies.length);
     cookies.forEach(c => {
       const name = c.split('=')[0];
-      terminalPrintLn("removing: " + name);
+      term.printLn("removing: " + name);
       removeCookie(name);
     });
   });
   //cookies
   terminalAddCommand("cookies",
-    function(argLine) {
+    function(term, argLine) {
       if (document.cookie === '') {
-        if (!argLine.includes("-s")) terminalPrintError("No cookies found.")
+        if (!argLine.includes("-s")) term.printError("No cookies found.")
       } else {
-        terminalPrintList(document.cookie.split(/; */), false);
+        term.printList(document.cookie.split(/; */), false);
       }
     },
-    function() {
-      terminalPrintLn("Usage:");
-      terminalPrintLn("  cookies        //Prints all cookies.");
-      terminalPrintLn("  cookies -s     //(silent)Prints only cookies, no error.");
+    function(term) {
+      term.printLn("Usage:");
+      term.printLn("  cookies        //Prints all cookies.");
+      term.printLn("  cookies -s     //(silent)Prints only cookies, no error.");
     });
   //doCookiesWork
-  terminalAddCommand("docookieswork", () => {
+  terminalAddCommand("docookieswork", (term) => {
     function getCookie(name, defaultValue = undefined) {
       if (name === null || name === undefined || typeof name != "string" || name == '') {
         console.log('error: cookie needs a name');
@@ -88,7 +88,7 @@ if (typeof terminalAddCommand === "function") {
     if (itWorks) {
       removeCookie(name);
     }
-    terminalPrintLn(itWorks);
+    term.printLn(itWorks);
     return itWorks;
   })
 }

@@ -11,11 +11,11 @@
       "term/terminal-variables.js",
       "term/terminal-cookies.js",
       "term/terminal-eval.js",
-      "term/terminal-featuretest.js",
-      "term/terminal-stresstest.js",
-      "term/terminal-forcelocals.js",
       "term/terminal-timerdebug.js",
-      // "term/terminal-transfer.js",
+      "term/terminal-stresstest.js",
+      // "term/terminal-featuretest.js",
+      // "term/terminal-forcelocals.js",
+      // "term/terminal-transfer.js", // only for browser-extention
     ];
 
     for (let ext of extentionScripts) {
@@ -24,11 +24,11 @@
       element.src = ext;
       document.head.append(element);
     }
-  }
+  }//--> addScripts = function()  {
 
   if (document.body) {
     addScripts();
   } else {
-    window.addEventListener("load", addScripts());
+    window.addEventListener("load", addScripts);
   }
 }

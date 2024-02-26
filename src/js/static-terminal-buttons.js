@@ -1,43 +1,52 @@
-window.addEventListener("load", terminalRefocusInput);
+const TERMINAL_NAME = "static";
+
+window.addEventListener("load", 
+  ()=>getTerminal(TERMINAL_NAME).inputTextEl.focus());
 
 function btn_terminalHelp() {
-  terminalCommand("help");
-  terminalRefocusInput();
+  let term = getTerminal(TERMINAL_NAME);
+  term.terminalCommand("help");
+  term.inputTextEl.focus();
 }
 
 function btn_promptSample() {
-  terminalPrintTitle("Prompt sample:");
+  let term = getTerminal(TERMINAL_NAME);
+  term.printTitle("Prompt sample:");
   let age = prompt("Enter your age:", "404");
-  terminalPrintLn("Age-input: " + age);
+  term.printLn("Age-input: " + age);
   let days = age * 365;
-  terminalPrintLn(`Days alive: ${days}`);
+  term.printLn(`Days alive: ${days}`);
   let weeks = Math.round(days / 7);
-  terminalPrintLn(`Weeks alive: ${weeks}`);
+  term.printLn(`Weeks alive: ${weeks}`);
   let adult = age >= 18;
-  terminalPrintLn("Type: " + (adult ? "adult" : "minor"));
-  terminalRefocusInput();
+  term.printLn("Type: " + (adult ? "adult" : "minor"));
+  term.inputTextEl.focus();
 }
 
 function btn_kittySample() {
-  terminalPrintTitle("Kitty sample:");
-  terminalPrintError("Error: Kitties are cute!");
-  terminalPrintLn('<img src="img/kitty.jpg">Hello kitty!');
-  terminalRefocusInput();
+  let term = getTerminal(TERMINAL_NAME);
+  term.printTitle("Kitty sample:");
+  term.printError("Error: Kitties are cute!");
+  term.printLn('<img src="img/kitty.jpg">Hello kitty!');
+  term.inputTextEl.focus();
 }
 
 function btn_printObjectSample() {
-  terminalPrintTitle("print Object sample 1:");
-  terminalPrintVar("hello");
-  terminalPrintVar(3.1419);
-  terminalPrintTitle("print Object sample 2:");
+  let term = getTerminal(TERMINAL_NAME);
+  term.printTitle("print Object sample 1:");
+  term.printVar("hello");
+  term.printVar(3.1419);
+  term.printTitle("print Object sample 2:");
   let myObject = { hello: "World", number:100};
   myObject.InnerObject = { foo: "bar", myFunction: btn_printObjectSample}
   myObject.array = [1,2,4,8];
-  terminalPrintVar(myObject, "sample");
-  terminalRefocusInput();
+  term.printVar(myObject, "sample");
+  term.inputTextEl.focus();
 }
 
 function btn_terminalClear(){
-  terminalClear();
-  terminalRefocusInput();
+  let term = getTerminal(TERMINAL_NAME);
+  term.clearOutput();
+  term.inputTextEl.focus();
 }
+

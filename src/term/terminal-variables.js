@@ -9,13 +9,13 @@
     const ext =
     {
       dovar: {
-        run: function(argLine) {
+        run: function(term, argLine) {
           function _doFunction(gVar, functionKey, args) {
             if (typeof gVar === "object" && typeof gVar[functionKey] === "function") {
-              // terminalPrintVar(args, "do args");
+              // term.printVar(args, "do args");
               return gVar[functionKey](...args);
             } else {
-              terminalPrintError("Do error: " + functionKey + " is not a function");
+              term.printError("Do error: " + functionKey + " is not a function");
             }
           };
           /* To run a function of a Class (like document.getElementById(..))
@@ -23,9 +23,9 @@
           *  todo: ? --> use apply https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
           */
           if (globalThis === undefined) {
-            terminalPrintError("Do error: Missing globalThis");
+            term.printError("Do error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("Do error: No name");
+            term.printError("Do error: No name");
           } else {
             let args = splitToArguments(argLine);
             const verbal = args.includes("-v");
@@ -42,27 +42,27 @@
               const lastName = pName.pop(); //last object name
               result = _doFunction(terminalGetGlobal(pName.join('.')), lastName, args);
             }
-            if (verbal) terminalPrintVar(result, gName + "(" + args.join(' ') + ")");
+            if (verbal) term.printVar(result, gName + "(" + args.join(' ') + ")");
             return result;
           }
         },
-        help: function() {
-          terminalPrintLn("Runs given global function with arguments, and returns result.");
-          terminalPrintLn("<b>Usage:</b>");
-          terminalPrintLn("dovar FUNCTION_NAME [ArgumentS]                 //Runs function FUNCTION_NAME with optional ArgumentS");
-          terminalPrintLn("dovar -v FUNCTION_NAME [ArgumentS]              //Same as above but prints result too.");
-          terminalPrintLn("<b>Samples:</b>");
-          terminalPrintLn("dovar window.open https://developer.mozilla.org  //Runs function window.open() with the url as argument");
-          terminalPrintLn("dovar -v document.getElementById terminal-up     //Runs function document.getElementById with terminal-up as argument")
-          terminalPrintLn("dovar document.body.remove                       //Warning: removes all page content");
+        help: function(term) {
+          term.printLn("Runs given global function with arguments, and returns result.");
+          term.printLn("<b>Usage:</b>");
+          term.printLn("dovar FUNCTION_NAME [ArgumentS]                 //Runs function FUNCTION_NAME with optional ArgumentS");
+          term.printLn("dovar -v FUNCTION_NAME [ArgumentS]              //Same as above but prints result too.");
+          term.printLn("<b>Samples:</b>");
+          term.printLn("dovar window.open https://developer.mozilla.org  //Runs function window.open() with the url as argument");
+          term.printLn("dovar -v document.getElementById terminal-up     //Runs function document.getElementById with terminal-up as argument")
+          term.printLn("dovar document.body.remove                       //Warning: removes all page content");
         }
       },
       getvar: {
-        run: function(argLine) {
+        run: function(term, argLine) {
           if (globalThis === undefined) {
-            terminalPrintError("Getvar error: Missing globalThis");
+            term.printError("Getvar error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("Getvar error: Missing argument: VARIABLE_NAME");
+            term.printError("Getvar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
             const args = splitToArguments(argLine);
@@ -77,43 +77,43 @@
             }
           }
         },
-        help: function() {
-          terminalPrintLn("Gets a global variable and returns it.");
-          terminalPrintLn("The returned result will be found in terminal.lastResult")
-          terminalPrintLn("<b>Usage:</b>");
-          terminalPrintLn("getvar VARIABLE_NAME");
-          terminalPrintLn("<b>Samples:</b>");
-          terminalPrintLn("getvar terminal                  //Returns terminal");
-          terminalPrintLn("getvar terminal.version          //Returns terminal.version");
-          terminalPrintLn("getvar var1 var2 var3            //Returns an object with var1 var2 and var3 keys and their global found value.");
-          terminalPrintLn("getvar document                  //Returns global document object.");
-          terminalPrintLn("getvar document.body.children    //Returns a list of the children in the body.");
-          terminalPrintLn("getvar document.head.children    //Returns a list of the children in the head.");
+        help: function(term) {
+          term.printLn("Gets a global variable and returns it.");
+          term.printLn("The returned result will be found in terminal.lastResult")
+          term.printLn("<b>Usage:</b>");
+          term.printLn("getvar VARIABLE_NAME");
+          term.printLn("<b>Samples:</b>");
+          term.printLn("getvar terminal                  //Returns terminal");
+          term.printLn("getvar terminal.version          //Returns terminal.version");
+          term.printLn("getvar var1 var2 var3            //Returns an object with var1 var2 and var3 keys and their global found value.");
+          term.printLn("getvar document                  //Returns global document object.");
+          term.printLn("getvar document.body.children    //Returns a list of the children in the body.");
+          term.printLn("getvar document.head.children    //Returns a list of the children in the head.");
         }
       },
       globals: {
-        run: function() {
+        run: function(term) {
           if (globalThis !== undefined) {
-            terminalPrintVar(globalThis, "globalThis");
+            term.printVar(globalThis, "globalThis");
           } else if (self !== undefined) {
-            terminalPrintVar(self, "self");
+            term.printVar(self, "self");
           } else if (global !== undefined) {
-            terminalPrintVar(global, "global");
+            term.printVar(global, "global");
           } else {
-            terminalPrintError("Globals error: No globals!?");
+            term.printError("Globals error: No globals!?");
           }
-          if (document !== undefined && globalThis.document !== document) terminalPrintVar(document, "document");
+          if (document !== undefined && globalThis.document !== document) term.printVar(document, "document");
         },
-        help: function() {
-          terminalPrintLn("Prints all global variables.");
+        help: function(term) {
+          term.printLn("Prints all global variables.");
         }
       },
       logvar: {
-        run: function(argLine) {
+        run: function(term, argLine) {
           if (globalThis === undefined) {
-            terminalPrintError("LogVar error: Missing globalThis");
+            term.printError("LogVar error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("LogVar error: Missing argument: VARIABLE_NAME");
+            term.printError("LogVar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
             let args = splitToArguments(argLine);
@@ -127,21 +127,21 @@
             if (Object.keys(result).length == 1) {
               result = result[Object.keys(result)[0]];
             }
-            // terminalPrintVar(result);
+            // term.printVar(result);
             console.log(result);
             if (returnResult) return result;
           }
         },
-        help: function() {
-          terminalPrintLn("Like printvar but Logs variable(s) to console.");
+        help: function(term) {
+          term.printLn("Like printvar but Logs variable(s) to console.");
         }
       },
       printvar: {
-        run: function(argLine) {
+        run: function(term, argLine) {
           if (globalThis === undefined) {
-            terminalPrintError("PrintVar error: Missing globalThis");
+            term.printError("PrintVar error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("PrintVar error: Missing argument: VARIABLE_NAME");
+            term.printError("PrintVar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
             let args = splitToArguments(argLine);
@@ -155,33 +155,33 @@
             const keys = Object.keys(result);
             if (keys.length == 1) {
               result = result[keys[0]];
-              terminalPrintVar(result, keys[0]);
+              term.printVar(result, keys[0]);
             } else {
-              terminalPrintVar(result);
+              term.printVar(result);
             }
             if (returnResult) return result;
           }
         },
-        help: function() {
-          terminalPrintLn("Prints value of global variable.");
-          terminalPrintLn("<b>Usage:</b>");
-          terminalPrintLn("printvar VARIABLE_NAME           //Prints variable, returns nothing.");
-          terminalPrintLn("printvar -r VARIABLE_NAME        //Prints variable, returns variable.");
-          terminalPrintLn("<b>Samples:</b>");
-          terminalPrintLn("printvar terminal                //Prints terminal");
-          terminalPrintLn("printvar terminal.version        //Prints terminal.version");
-          terminalPrintLn("printvar -r terminal.lastResult  //Prints terminal.lastResult and returns it.");
-          terminalPrintLn("printvar document                //Prints global document object.");
-          terminalPrintLn("printvar document.body.children  //Prints body elements.");
-          terminalPrintLn("printvar document.head.children  //Prints head elements.");
+        help: function(term) {
+          term.printLn("Prints value of global variable.");
+          term.printLn("<b>Usage:</b>");
+          term.printLn("printvar VARIABLE_NAME           //Prints variable, returns nothing.");
+          term.printLn("printvar -r VARIABLE_NAME        //Prints variable, returns variable.");
+          term.printLn("<b>Samples:</b>");
+          term.printLn("printvar terminal                //Prints terminal");
+          term.printLn("printvar terminal.version        //Prints terminal.version");
+          term.printLn("printvar -r terminal.lastResult  //Prints terminal.lastResult and returns it.");
+          term.printLn("printvar document                //Prints global document object.");
+          term.printLn("printvar document.body.children  //Prints body elements.");
+          term.printLn("printvar document.head.children  //Prints head elements.");
         }
       },
       removevar: {
-        run: function(argLine) {
+        run: function(term, argLine) {
           if (globalThis === undefined) {
-            terminalPrintError("RemoveVar error: Missing globalThis");
+            term.printError("RemoveVar error: Missing globalThis");
           } else if (argLine == '') {
-            terminalPrintError("RemoveVar error: Missing arguments");
+            term.printError("RemoveVar error: Missing arguments");
           } else {
             let args = splitToArguments(argLine);
             const keys = Object.keys(globalThis);
@@ -193,16 +193,16 @@
             if (args.includes("-a")) {
               count = keys.length;
               keys.forEach(key => {
-                if (verbal) terminalPrintLn("removing: " + key)
+                if (verbal) term.printLn("removing: " + key)
                 delete globalThis[key];
               });
-              terminalPrintLn("Removed " + count + " keys.")
+              term.printLn("Removed " + count + " keys.")
               return;
             } else if (args.includes("-n")) {
               args = args.filter(e => e !== '-n');
               keys.forEach(key => {
                 if (globalThis[key] === null || globalThis[key] === undefined) {
-                  if (verbal) terminalPrintLn("removing: " + key)
+                  if (verbal) term.printLn("removing: " + key)
                   delete globalThis[key];
                   count++;
                 }
@@ -212,7 +212,7 @@
               keys.forEach(key => {
                 if (globalThis[key] !== globalThis &&
                   !(typeof globalThis[key] === "function" && globalThis[key].toString().includes("[native code]"))) {
-                  if (verbal) terminalPrintLn("removing: " + key)
+                  if (verbal) term.printLn("removing: " + key)
                   delete globalThis[key];
                   count++;
                 }
@@ -227,43 +227,43 @@
                 obj = terminalGetGlobal(pName.join('.')); //parent object
               }
               if (obj !== undefined && obj[lastName] !== undefined) {
-                if (verbal) terminalPrintLn("removing: " + gName)
+                if (verbal) term.printLn("removing: " + gName)
                 delete obj[lastName];
                 count++;
               } else {
                 if (obj === undefined) {
-                  terminalPrintError("Variable " + pName.join(".") + " = undefined")
+                  term.printError("Variable " + pName.join(".") + " = undefined")
                 } else {
-                  terminalPrintError("Variable " + gName + " = undefined");
+                  term.printError("Variable " + gName + " = undefined");
                 }
               }
             }
-            terminalPrintLn("Removed " + (count > 1 ? (count + " keys.") : (count === 0 ? "nothing" : "1 key")));
+            term.printLn("Removed " + (count > 1 ? (count + " keys.") : (count === 0 ? "nothing" : "1 key")));
           }
         },
-        help: function() {
-          terminalPrintLn("Removes global variables.");
-          terminalPrintLn("<b>Usage:</b>");
-          terminalPrintLn("removevar -v ...            //Prints removing VARIABLE_NAME.");
-          terminalPrintLn("removevar -f                //Removes all global variables that are not a parent redefinition or native function.");
-          terminalPrintLn("removevar -n                //Removes all null or undefined global variables.");
-          terminalPrintLn("removevar -a                //Removes ALL global variables.");
-          terminalPrintLn("removevar VARIABLE_NAMES    //Removes the global variables provided.")
-          terminalPrintLn("<b>Samples:</b>");
-          terminalPrintLn("removevar terminal          //Removes the global variable terminal.");
-          terminalPrintLn("removevar var1 var2         //Removes the 2 global variables var1 and var2.");
-          terminalPrintLn("removevar terminal.history  //Removes history from terminal.");
-          terminalPrintLn("removevar -n terminal.history  //Removes history from terminal, and all null or undefined global variables.");
-          terminalPrintLn("removevar -n -v             //Prints variable names of all null or undefined global variables it removes.");
+        help: function(term) {
+          term.printLn("Removes global variables.");
+          term.printLn("<b>Usage:</b>");
+          term.printLn("removevar -v ...            //Prints removing VARIABLE_NAME.");
+          term.printLn("removevar -f                //Removes all global variables that are not a parent redefinition or native function.");
+          term.printLn("removevar -n                //Removes all null or undefined global variables.");
+          term.printLn("removevar -a                //Removes ALL global variables.");
+          term.printLn("removevar VARIABLE_NAMES    //Removes the global variables provided.")
+          term.printLn("<b>Samples:</b>");
+          term.printLn("removevar terminal          //Removes the global variable terminal.");
+          term.printLn("removevar var1 var2         //Removes the 2 global variables var1 and var2.");
+          term.printLn("removevar terminal.history  //Removes history from terminal.");
+          term.printLn("removevar -n terminal.history  //Removes history from terminal, and all null or undefined global variables.");
+          term.printLn("removevar -n -v             //Prints variable names of all null or undefined global variables it removes.");
         }
       },
       setvar: {
-        run: function(argLine) {
+        run: function(term, argLine) {
           if (globalThis === undefined) {
-            terminalPrintError("Setvar error: Missing globalThis");
+            term.printError("Setvar error: Missing globalThis");
           } else {
             if (argLine == '') {
-              terminalPrintError("Setvar error: no name");
+              term.printError("Setvar error: no name");
             } else {
               let args = splitToArguments(argLine);
               for (const element of args) {
@@ -272,7 +272,7 @@
                 const value = stringToValue(keyValuePair[1]);
                 if (names.length == 1) {
                   globalThis[names[0]] = value;
-                  terminalPrintVar(globalThis[names[0]], keyValuePair[0]);
+                  term.printVar(globalThis[names[0]], keyValuePair[0]);
                 } else {
                   let obj = globalThis;
                   for (let i = 0; i < names.length - 1; i++) {
@@ -281,8 +281,8 @@
                       let rem = names.length - 1 - i;
                       names.splice(names.length - rem, rem);
                       let name = names.join('.');
-                      terminalPrint('<span style="color:red;">Variable is not an object: </span>');
-                      terminalPrintVar(obj[names[i]], name);
+                      term.print('<span style="color:red;">Variable is not an object: </span>');
+                      term.printVar(obj[names[i]], name);
                       return;
                     };
                   }
@@ -293,40 +293,36 @@
             }
           }
         },
-        help: function() {
-          terminalPrintLn("<b>Usage:</b>");
-          terminalPrintLn("setvar NAME=VALUE                                //Sets VALUE to a global variable, NAME, and returns it.");
-          terminalPrintLn("<b>Samples:</b>");
-          terminalPrintLn("setvar terminal                                  //Sets terminal to undefined");
-          terminalPrintLn("setvar terminal.version=prehistoric              //Sets terminal.version to string `prehistoric`");
-          terminalPrintLn("setvar myNumber=8                                //Sets myNumber to number 8");
-          terminalPrintLn("setvar myNumber=(number)-8.1                     //Sets myNumber to number -8.1");
-          terminalPrintLn("setvar var1 var2 var3                            //Creates 3 undefined variables");
-          terminalPrintLn("setvar myName=\"Ward Truyen\"                      //Sets myName to string");
-          terminalPrintLn('setvar obj={"1":"test","2":true}                 //Sets obj to JSON.stringified object');
-          terminalPrintLn("setvar myFunc=(function)terminalPrintLn(\"Hello\") //Creates a function");
-          terminalPrintLn("setvar myVar=(global)terminal.history            //Sets(binds) myVar to the contents of terminal.history");
+        help: function(term) {
+          term.printLn("<b>Usage:</b>");
+          term.printLn("setvar NAME=VALUE                                //Sets VALUE to a global variable, NAME, and returns it.");
+          term.printLn("<b>Samples:</b>");
+          term.printLn("setvar terminal                                  //Sets terminal to undefined");
+          term.printLn("setvar terminal.version=prehistoric              //Sets terminal.version to string `prehistoric`");
+          term.printLn("setvar myNumber=8                                //Sets myNumber to number 8");
+          term.printLn("setvar myNumber=(number)-8.1                     //Sets myNumber to number -8.1");
+          term.printLn("setvar var1 var2 var3                            //Creates 3 undefined variables");
+          term.printLn("setvar myName=\"Ward Truyen\"                      //Sets myName to string");
+          term.printLn('setvar obj={"1":"test","2":true}                 //Sets obj to JSON.stringified object');
+          term.printLn("setvar myFunc=(function)terminalPrintLn(\"Hello\");//Creates a function");
+          term.printLn("setvar myVar=(global)myFunc                      //Sets(binds) myVar to the contents of myFunc");
         }
       },
     };
     const aliases = {
-      db: "printvar -r document.body.children",
-      dh: "printvar -r document.head.children",
       run: "dovar",
       pdo: "dovar -v ",
       g: "getvar",
       gg: "globals",
-      gdb: "getvar document.body.children ",
-      gdh: "getvar document.head.children ",
-      gterminal: "getvar terminal",
-      glast: "getvar terminal.lastResult",
-      gresult: "getvar terminal.lastResult",
-      ghistory: "getvar terminal.history",
+      db: "printvar -r document.body.children",
+      dh: "printvar -r document.head.children",
+      gdb: "printvar -r document.body.children ",
+      gdh: "printvar -r document.head.children ",
       result: "printvar -r terminal.lastResult",
-      last: "printvar -r terminal.lastResult",
+      error: "printvar terminal.lastError",
       pv: "printvar -r ",
       terminal: "printvar -r terminal",
-      history: "printvar terminal.history",
+      // history: "printvar terminal.history",
     };
 
     //add commands in ext

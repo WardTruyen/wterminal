@@ -1,5 +1,5 @@
 /* Author: Ward Truyen
-* Version: 1.3.1
+* Version: 1.4.0
 */
 
 .dark-mode {
@@ -16,38 +16,6 @@
   background-color: #1F1F1F;
   border: 2px solid #205060;
   box-shadow: 3px 3px 3px #4F4F4F;
-}
-
-.dark-mode #terminal-container{
-  background: unset;
-  background-color: #000000;
-  color: #F0F0F0; 
-}
-
-.dark-mode #terminal-output{
-  background-color: #0F0F0F;
-  /* color: #F0F0F0; /* todo: try orange! */ 
-}
-
-.dark-mode #terminal-input{
-  background-color: #0F0F0F;
-  color: #F0F0F0;
-}
-
-.dark-mode #terminal-container > form > input[type=submit]{
-  background-color: #1F1F1F;
-  color: white;
-  border: 1px solid honeydew;
-}
-
-.dark-mode #terminal-input:hover{
-  background-color: #444;
-}
-.dark-mode #terminal-container input[type="submit"]:hover{
-  background-color: #444;
-}
-.dark-mode #terminal-container button:hover{
-  background-color: #444;
 }
 
 .dark-mode button{
@@ -89,3 +57,48 @@
 .dark-mode canvas{
   border: 1px solid #FFFFFF60;
 }
+
+.dark-mode a:visited{
+  color: #dd80dd;
+}
+
+.dark-mode a:hover{
+  color: #ff80aa;
+}
+
+/* 
+* --- darkmode for terminal ---
+*/
+
+.dark-mode .terminal-background .terminal-container{
+  background: unset;
+  background-color: #000000;
+  color: #F0F0F0; 
+}
+
+.dark-mode .terminal-output{
+  background-color: #0F0F0F;
+  /* color: #F0F0F0; /* todo: try orange! */ 
+}
+
+.dark-mode .terminal-input{
+  background-color: #0F0F0F;
+  color: #F0F0F0;
+}
+
+.dark-mode .terminal-container > form > input[type=submit]{
+  background-color: #1F1F1F;
+  color: white;
+  border: 1px solid honeydew;
+}
+
+.dark-mode .terminal-input:hover{
+  background-color: #444;
+}
+.dark-mode .terminal-container input[type="submit"]:hover{
+  background-color: #444;
+}
+.dark-mode .terminal-container button:hover{
+  background-color: #444;
+}
+

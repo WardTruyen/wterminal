@@ -7,18 +7,18 @@
 {// this code block hides the variables below from other scripts.
   const extentionCommandName = "forcelocals";
   const addExtention = function() {
-    const help = function() {
-      terminalPrintLn("Runs a test to find local variables.");
+    const help = function(term) {
+      term.printLn("Runs a test to find local variables.");
     }
-    const run = function() {
+    const run = function(term) {
       // const CHARACTERS_START = 65; // 65='A'
       const SYMBOLS_START = 91; // prev is 'Z'
       const SYMBOLS_END = 96; // next is 'a'
       const CHARACTERS_END = 122; // 122='z'
       const positionId = "foce-position";
       const foundId = "force-found";
-      terminalPrintLn("Feature test warning: Under construction, can have unexpected results, errors and crashes.");
-      terminalPrintLn(`Looking for variables: at:<span id="${positionId}">ctA</span> found:<span id="${foundId}"></span>`)
+      term.printLn("Feature test warning: Under construction, can have unexpected results, errors and crashes.");
+      term.printLn(`Looking for variables: at:<span id="${positionId}">ctA</span> found:<span id="${foundId}"></span>`)
 
       function replaceCharAt(str, index, replacement) {
         return str.substring(0, index) + replacement + str.substring(index + replacement.length);
@@ -43,10 +43,10 @@
         let count = 0;
         do {
           try {
-            terminalPrintLn("name: " + name);
+            term.printLn("name: " + name);
             const result = eval(name);
             if (result !== undefined) {
-              terminalPrintVar(result, name);
+              term.printVar(result, name);
               document.getElementById(positionId).innerHTML = name;
               const foundEl = document.getElementById(foundId);
               foundEl.innerHTML = Number(foundEl.innerHTML) + 1;
