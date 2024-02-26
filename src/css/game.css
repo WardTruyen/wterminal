@@ -2,10 +2,9 @@
 * Version: 1.0.0
 */
 canvas{
-  border: 1px solid #00000060;
   margin: auto;
   display: block;
-}
-canvas:focus{
-  outline:none;
+  border: solid 2px #3b3b3b;
+  border-radius: 4px;
+  outline: none;
 }
