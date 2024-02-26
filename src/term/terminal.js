@@ -349,22 +349,27 @@ class WTerminal {
     if (this.options.printToConsoleLog) {
       console.log("terminalPrint: ", ...args);
     }
-    let text = "";
     for (let arg of args) {
-      text += new String(arg);
+      if(arg instanceof HTMLElement){
+        this.outputEl.appendChild(arg);
+      }else{
+        this.outputEl.appendChild(document.createTextNode(new String(arg)));
+      }
     }
-    this.outputEl.innerHTML += text;
     this.outputEl.scrollTop = this.outputEl.scrollHeight;
   };
   printLn(...args) {
     if (this.options.printToConsoleLog) {
       console.log("terminalPrintLn: ", ...args);
     }
-    let text = "";
     for (let arg of args) {
-      text += new String(arg);
+      if(arg instanceof HTMLElement){
+        this.outputEl.appendChild(arg);
+      }else{
+        this.outputEl.appendChild(document.createTextNode(new String(arg)));
+      }
     }
-    this.outputEl.innerHTML += text + "<br>";
+    this.outputEl.appendChild(document.createElement('br'));
     this.outputEl.scrollTop = this.outputEl.scrollHeight;
   };
 
@@ -372,7 +377,7 @@ class WTerminal {
     if (this.options.printToConsoleLog) {
       console.log("Terminal cleared");
     }
-    this.outputEl.innerHTML = "";
+    this.outputEl.replaceChildren();
     this.outputEl.scrollTop = this.outputEl.scrollHeight;
   };
   //#endregion
@@ -392,6 +397,10 @@ class WTerminal {
   }
 
   //#region extra-output
+/* prints out bold */
+  printBold = function(text) {
+    this.printLn(createElement('b', null, text));
+  }
   /* prints out underlined */
   printTitle(title, useTags = true, char = "=") {
     if (title && typeof title === "string" && title.length > 0) {
@@ -403,14 +412,14 @@ class WTerminal {
         }
         this.printLn(underline);
       } else {
-        this.printLn("<u><b>" + title + "</u></b>");
+        this.printLn(createElement('u', null, createElement('b',null,title)));
       }
     }
   };
 
   /* prints out with red text */
   printError(...args) {
-    this.printLn('<span style="color:red;">', ...args, '</span>');
+    this.printLn(createElement('span', {style:"color: red;"}, ...args));
   };
 
   printList(list, printKeys = true) {
@@ -475,14 +484,14 @@ class WTerminal {
       this.printLn(prefix, name, " = undefined");
       return;
     } else if (t === "string") {
-      this.printLn(prefix, name, ' = `', obj.replaceAll('<', '&lt;'), '`');
+      this.printLn(prefix, name, ' = `', obj, '`');
       return;
     } else if (t === "object" && obj === null) {
       this.printLn(prefix, name, " = null");
       return;
     } else if (t !== "object") {
       if (t === "function") {
-        this.printLn(prefix, name, " = ", obj.toString().replaceAll('<', '&lt;'));
+        this.printLn(prefix, name, " = ", obj.toString());
       } else if (t === "number" || t === "boolean") {
         this.printLn(prefix, name, " = ", obj);
       } else {
@@ -609,7 +618,7 @@ class WTerminal {
             } else if (type === "boolean" || type === "number") {
               this.printLn(prefixIn, position, ' = ', obj[key]);
             } else if (type === "string") {
-              this.printLn(prefixIn, position, ' = `', obj[key].replaceAll('<', '&lt;'), '`');
+              this.printLn(prefixIn, position, ' = `', obj[key], '`');
             } else if (type === "object") {
               this._printObject(obj[key], position, prefixIn, lvl + 1);
             } else {
@@ -738,14 +747,14 @@ class WTerminal {
         term.printList(term.aliasExtensionList);
       },
       help: function(term) {
-        term.printLn("<b>Usage:</b>");
+        term.printBold("Usage:");
         term.printLn("alias               //Prints all aliases");
-        term.printLn("<b>About alias usage:</b>");
+        term.printBold("About alias usage:");
         term.printLn("An alias-name has no spaces, but the alias-value can have multiple spaces.");
         term.printLn("When the terminal detects an alias-name as the first input word, it gets replaced to the alias-value.");
         term.printLn("When the alias-value contains a space, then the arguments will be");
         term.printLn("  joined with the alias-value without a space joining them.");
-        term.printLn("<b>Samples of using an alias:</b>");
+        term.printBold("Samples of using an alias:");
         term.printLn("?                   //Changes to: `help`");
         term.printLn("? clear             //Changes to: `help clear`");
         term.printLn("version             //Changes to: `const version ` (command, space at the end)");
@@ -782,7 +791,7 @@ class WTerminal {
         }
       },
       help: function(term) {
-        term.printLn("<b>Usage:</b>");
+        term.printBold("Usage:");
         term.printLn("const               //Prints & returns all constant variables.");
         term.printLn("const version       //Prints & returns only the version constant.");
       }
@@ -803,15 +812,23 @@ class WTerminal {
           if (argLine.charAt(1) == 'r') {
             term.printError(argLine.substring(3));
             return;
+          }else if (argLine.charAt(1) == 'g') {
+            term.printLn(createElement('span', {style:"color: green;"}, argLine.substring(3)));
+            return;
+          }else if (argLine.charAt(1) == 'b') {
+            term.printLn(createElement('span', {style:"color: blue;"}, argLine.substring(3)));
+            return;
           }
         }
         term.printLn(argLine);
       },
       help: function(term) {
         term.printLn("Prints arguments.");
-        term.printLn("<b>Usage:</b>");
+        term.printBold("Usage:");
         term.printLn('echo hello          //Prints "hello".');
         term.printLn('echo -r hello       //Prints "hello", but in red.');
+        term.printLn('echo -g hello       //Prints "hello", but in green.');
+        term.printLn('echo -b hello       //Prints "hello", but in blue.');
       }
     },
     // exit: {
@@ -830,7 +847,7 @@ class WTerminal {
           term.print(`Close the terminal with the ${term.options.keyClose}-key. `);
           term.printLn(`Use the ${term.options.keyHistory}-key to get previous command. `)
           term.printLn(`Type a command, optionally add some arguments, and press enter or click on submit.`);
-          term.printLn("<b>Basic commands:</b>");
+          term.printBold("Basic commands:");
           Object.keys(WTerminal.commandList).forEach((command, i) => {
             if (i == 0) {
               term.print("  " + command);
@@ -842,7 +859,7 @@ class WTerminal {
             }
           });
           term.printLn();
-          term.printLn("<b>Extension commands:</b>");
+          term.printBold("Extension commands:");
           Object.keys(term.commandListExtension).forEach((command, i) => {
             if (i == 0) {
               term.print("  " + command);
@@ -854,9 +871,9 @@ class WTerminal {
             }
           });
           term.printLn();
-          term.printLn("<b>Using help:</b>");
+          term.printBold("Using help:");
           term.printLn("help [COMMAND_NAME] //Prints help, optionally on a command");
-          term.printLn("<b>Samples of help:</b>");
+          term.printBold("Samples of help:");
           term.printLn("help                //Prints this help again.");
           term.printLn("help help           //Prints more help.");
           term.printLn("help option         //Prints help on the option command.");
@@ -877,21 +894,21 @@ class WTerminal {
       },
       help: function(term) {
         term.printLn("Prints help about the terminal or given command.");
-        term.printLn("<b>For terminal help use:</b>");
+        term.printBold("For terminal help use:");
         term.printLn("help");
-        term.printLn("<b>For help on a command use:</b>");
+        term.printBold("For help on a command use:");
         term.printLn("help commandName");
-        term.printLn("<b>Samples of help:</b>");
+        term.printBold("Samples of help:");
         term.printLn("help            //prints terminal help.");
         term.printLn("help help       //prints this help again.");
         term.printLn("help option      //prints help on the option command.");
         term.printLn("help alias      //prints help on the alias command.");
-        term.printLn("<b>Advanced usage:</b>")
+        term.printBold("Advanced usage:")
         term.printLn("Previous commands are stored in `terminal.history`")
         term.printLn("Every command is a function, the result of executing this");
         term.printLn("   will be stored in the global variable `terminal.lastResult`.");
         term.printLn("Multiple commands can be chained, separated by `&&`.");
-        term.printLn("<b>Advanced samples:</b>");
+        term.printBold("Advanced samples:");
         term.printLn("const version && printvar terminal");
         term.printLn("  //Gets version value, automatically stores it in terminal.lastResult");
         term.printLn("  //  then prints out the terminal variable (you will see lastResult in there)");
@@ -930,10 +947,10 @@ class WTerminal {
         }
       },
       help: function(term) {
-        term.printLn("<b>Usage:</b>");
+        term.printBold("Usage:");
         term.printLn("option                           //Prints & returns all the options used.");
         term.printLn("option [VARIABLE_NAME=VALUE]     //Sets option VARIABLE_NAME to the following value.");
-        term.printLn("<b>Samples:</b>");
+        term.printBold("Samples:");
         term.printLn("option printAliasChange=true     //Sets option printAliasChange to true.");
         term.printLn("option printCommandReturn=true   //Sets option printCommandReturn to true.");
         term.printLn("option tpo_objectPrefix=\"#  \"    //Sets objectPrefix to `#  `.")
@@ -1090,11 +1107,11 @@ class WTerminal {
     cmdLine = cmdLine.trim();
     // print input
     if (isSuperCommand) {
-      this.printLn("<u>super-command#</u><b> " + cmdLine + "</b>");
+      this.printLn(createElement('u',null, 'super-command#'), createElement('b',null," ", cmdLine));
     } else {
       let d = new Date();
       if (this.outputEl.innerHTML != '') this.print('\n')
-      this.printLn("<u>(" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ")#</u><b> " + cmdLine + "</b>");
+      this.printLn(createElement('u',null, "(" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ")#"), createElement('b',null," ", cmdLine));
     }
     // execute
     let result;
@@ -1105,7 +1122,7 @@ class WTerminal {
         // this.printList(commands); 
         for (let command of commands) {
           command = command.trim();
-          if (this.options.printInnerCommands) this.printLn("<u>inner-command#</u> <b>", command, "</b>");
+          if (this.options.printInnerCommands) this.printLn(createElement("u", null, "inner-command#"), createElement("b", null, " ", command));
           result = this._terminalCommand(command);
         }
       } else {
@@ -1114,7 +1131,8 @@ class WTerminal {
       }
     } catch (e) {
       // this.printError("Command error: ", e)
-      this.printVar(e, "<span style='color:red;'>Command error</span>");
+      this.printError("Command error:");
+      this.printVar(e, "error");
       this.lastError = e;
       if (TERMINAL_GLOBAL_LAST_ERROR) {
         if (typeof globalThis.terminal !== "object") {
@@ -1176,7 +1194,7 @@ class WTerminal {
         command = al;
       }
       if (this.options.printAliasChange) {
-        this.printLn("Alias found#<b> " + command + " " + argLine + "</b>");
+        this.printLn("Alias found#", createElement('b', null, command + " " + argLine));
       }
     }
     // execute
@@ -1192,7 +1210,7 @@ class WTerminal {
     }
     // print result
     if (this.options.printCommandReturn) {
-      this.printVar(result, `<b>Result of \`${cmdLine}\`</b>`);
+      this.printVar(result, `Result of \`${cmdLine}\``);
     }
     // store result
     this.lastResult = result;

@@ -27,7 +27,10 @@ function btn_kittySample() {
   let term = getTerminal(TERMINAL_NAME);
   term.printTitle("Kitty sample:");
   term.printError("Error: Kitties are cute!");
-  term.printLn('<img src="img/kitty.jpg">Hello kitty!');
+  // term.printLn('<img src="img/kitty.jpg">Hello kitty!');
+  let img = document.createElement("img");
+  img.src = "img/kitty.jpg";
+  term.printLn(img, "Hello kitty!");
   term.inputTextEl.focus();
 }
 
