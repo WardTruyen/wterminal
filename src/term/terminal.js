@@ -350,9 +350,9 @@ class WTerminal {
       console.log("terminalPrint: ", ...args);
     }
     for (let arg of args) {
-      if(arg instanceof HTMLElement){
+      if (arg instanceof HTMLElement) {
         this.outputEl.appendChild(arg);
-      }else{
+      } else {
         this.outputEl.appendChild(document.createTextNode(new String(arg)));
       }
     }
@@ -363,9 +363,9 @@ class WTerminal {
       console.log("terminalPrintLn: ", ...args);
     }
     for (let arg of args) {
-      if(arg instanceof HTMLElement){
+      if (arg instanceof HTMLElement) {
         this.outputEl.appendChild(arg);
-      }else{
+      } else {
         this.outputEl.appendChild(document.createTextNode(new String(arg)));
       }
     }
@@ -397,7 +397,7 @@ class WTerminal {
   }
 
   //#region extra-output
-/* prints out bold */
+  /* prints out bold */
   printBold = function(text) {
     this.printLn(createElement('b', null, text));
   }
@@ -412,14 +412,14 @@ class WTerminal {
         }
         this.printLn(underline);
       } else {
-        this.printLn(createElement('u', null, createElement('b',null,title)));
+        this.printLn(createElement('u', null, createElement('b', null, title)));
       }
     }
   };
 
   /* prints out with red text */
   printError(...args) {
-    this.printLn(createElement('span', {style:"color: red;"}, ...args));
+    this.printLn(createElement('span', { style: "color: red;" }, ...args));
   };
 
   printList(list, printKeys = true) {
@@ -513,9 +513,9 @@ class WTerminal {
       } else if (obj instanceof Float64Array) {
         objType += " Float64Array";
       } else {
-        try{
+        try {
           objType = Object.getPrototypeOf(obj).toString().replace('[', '').replace(']', '');
-        }catch(e){
+        } catch (e) {
           if (obj instanceof Element) {
             objType += " Element";
           } else {
@@ -652,7 +652,7 @@ class WTerminal {
     const terminalBackground = this.backgroundEl;
     if (terminalBackground && terminalBackground.classList.contains(TERMINAL_VISIBLE_CLASS)) {
       terminalBackground.classList.remove(TERMINAL_VISIBLE_CLASS);
-    }else if (typeof terminalBackground === "undefined"){
+    } else if (typeof terminalBackground === "undefined") {
       this.printError("This is not a dropdown terminal.");
     }
   };
@@ -812,11 +812,11 @@ class WTerminal {
           if (argLine.charAt(1) == 'r') {
             term.printError(argLine.substring(3));
             return;
-          }else if (argLine.charAt(1) == 'g') {
-            term.printLn(createElement('span', {style:"color: green;"}, argLine.substring(3)));
+          } else if (argLine.charAt(1) == 'g') {
+            term.printLn(createElement('span', { style: "color: green;" }, argLine.substring(3)));
             return;
-          }else if (argLine.charAt(1) == 'b') {
-            term.printLn(createElement('span', {style:"color: blue;"}, argLine.substring(3)));
+          } else if (argLine.charAt(1) == 'b') {
+            term.printLn(createElement('span', { style: "color: blue;" }, argLine.substring(3)));
             return;
           }
         }
@@ -831,15 +831,20 @@ class WTerminal {
         term.printLn('echo -b hello       //Prints "hello", but in blue.');
       }
     },
-    // exit: {
-    //   run: function(term) {
-    //     term.clearOutput();
-    //     term.terminalClose();
-    //   },
-    //   help: function(term) {
-    //     term.printLn("Clears and closes terminal.");
-    //   }
-    // },
+    height: {
+      run: function(term, argLine) {
+        if (argLine) {
+          term.outputEl.style.minHeight = argLine; // sample 40em (40 lines)
+          term.outputEl.style.maxHeight = argLine;
+        } else {
+          term.printLn("height: " + term.outputEl.style.minHeight)
+        }
+      },
+      help: function(term) {
+        term.printLn("gets or sets the height of the terminal-output element")
+        term.printLn("height 40em    // sets terminal-output height to 40 lines")
+      }
+    },
     help: {
       run: function(term, argLine) {
         if (argLine == '') {
@@ -1107,11 +1112,11 @@ class WTerminal {
     cmdLine = cmdLine.trim();
     // print input
     if (isSuperCommand) {
-      this.printLn(createElement('u',null, 'super-command#'), createElement('b',null," ", cmdLine));
+      this.printLn(createElement('u', null, 'super-command#'), createElement('b', null, " ", cmdLine));
     } else {
       let d = new Date();
       if (this.outputEl.innerHTML != '') this.print('\n')
-      this.printLn(createElement('u',null, "(" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ")#"), createElement('b',null," ", cmdLine));
+      this.printLn(createElement('u', null, "(" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ")#"), createElement('b', null, " ", cmdLine));
     }
     // execute
     let result;
@@ -1290,7 +1295,7 @@ const terminalPrintLn = function(...args) {
   WTerminal.printLn(...args);
 }
 
-const terminalOpen = function(){
+const terminalOpen = function() {
   WTerminal.terminals.dropdown.terminalOpen();
 }
 
