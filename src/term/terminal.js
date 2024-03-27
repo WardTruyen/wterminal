@@ -1296,7 +1296,14 @@ const terminalPrintLn = function(...args) {
 }
 
 const terminalOpen = function() {
-  WTerminal.terminals.dropdown.terminalOpen();
+  if(WTerminal.terminals.dropdown){
+    WTerminal.terminals.dropdown.terminalOpen();
+  }else{
+    if (confirm("Dropdown terminal is not available. Create terminal?")){
+      instalDropdownTerminal();
+      WTerminal.terminals.dropdown.terminalOpen();
+    }
+  }
 }
 
 const getTerminal = function(name) {
