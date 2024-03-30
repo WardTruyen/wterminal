@@ -13,6 +13,7 @@
       "term/terminal-eval.js",
       "term/terminal-timerdebug.js",
       "term/terminal-stresstest.js",
+      "term/terminal-popvar.js",
       // "term/terminal-featuretest.js",
       // "term/terminal-forcelocals.js",
       // "term/terminal-transfer.js", // only for browser-extention
