@@ -604,7 +604,7 @@ class WTerminal {
           } catch (e) { }
           this.printLn(prefix, name, " = (", t, "){ length: ", keys.length);
         }
-        if (lvl !== 0 && keys.length > TPO_INNER_MAX_LENGTH) {
+        if (lvl !== 0 && keys.length > this.options.tpo_innerMaxLength) {
           this.printLn(prefix + this.options.tpo_objectPrefix, "(too long)");
         } else {
           const prefixIn = prefix + this.options.tpo_objectPrefix;
