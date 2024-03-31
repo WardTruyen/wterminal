@@ -5,9 +5,11 @@
 */
 
 {// this code block hides the variables below from other scripts.
+  const PAUSE_SYMBOL = "&#9724;"
 
-  class PopUpWindow{
-    constructor(variableName, term){
+  class PopUpWindow {
+    static popupCounter = 0;
+    constructor(variableName, term) {
       this.variableName = variableName;
       this.printVar = term.printVar;
       this._getObjType = term._getObjType;
@@ -17,55 +19,82 @@
       let o = this.options;
       let to = term.options;
       o.printToConsoleLog = false;
-      o.tpo_unknownObjectPrint = to.tpo_unknownObjectPrint ;
+      o.tpo_unknownObjectPrint = to.tpo_unknownObjectPrint;
       o.tpo_objectPrefix = to.tpo_objectPrefix;
       o.tpo_specialPrefix = to.tpo_specialPrefix;
       o.tpo_maxDepth = to.tpo_maxDepth;
       o.tpo_innerMaxLength = to.tpo_innerMaxLength;
       this.createPopup();
       this.printVariable();
+      this.intervalId = setInterval(() => this.printVariable(), 1000);
     }
 
-    createPopup(){
-      const containerAttributes = {
-        style: 'border: 1px solid black; z-index: 9990; position: absolute; top: 3em; left: 3em; background: white;'
-      };
-      this.container = createElement('div', containerAttributes);
-      this.outputEl = createElement('pre', {style: 'margin: 2px;'}, this.variableName);
-      let btnRefresh = createElement('button', null, 'refresh');
-      btnRefresh.addEventListener("click", ()=>this.printVariable());
-      let btnClose = createElement('button',null, 'X');
-      btnClose.addEventListener("click", ()=>this.closePopup());
-      let headerDiv = createElement('div', {style: "border-bottom: 1px solid black; padding: 2px; background: #00000060"});
+    createPopup() {
+      const t = 2 + PopUpWindow.popupCounter++;
+      let containerStyle = 'border: 1px solid black; z-index: 9990; position: absolute; background: #ffffffa0; border-radius: 2px; backdrop-filter: blur(3px);';
+      containerStyle += ` top: ${t}em; left: ${t}em;`;
+      this.container = createElement('div', { style: containerStyle, title: this.variableName });
+      const outputStyle = 'margin: 2px; font-family: Monospace, Incosolata, Courier; font-size: 12px; line-height: 1.05;';// overflow-y: scroll; max-height: ' + (window.innerHeight-80) +'px;';
+      this.outputEl = createElement('pre', { style: outputStyle });
+      this.btnPauseContinue = createElement('button', { title: "pause" });
+      this.btnPauseContinue.innerHTML = PAUSE_SYMBOL;
+      this.btnPauseContinue.addEventListener("click", () => this.onPausePlay());
+      let btnRefresh = createElement('button', { title: "refresh" });
+      btnRefresh.innerHTML = '&#8635;';
+      btnRefresh.addEventListener("click", () => this.printVariable());
+      let btnClose = createElement('button', { title: 'close' });
+      btnClose.addEventListener("click", () => this.closePopup());
+      btnClose.innerHTML = "&#10006;";
+      let headerDiv = createElement('div', { style: "border-bottom: 1px solid black; padding: 2px; background: #00000060" });
       headerDiv.appendChild(btnRefresh);
-      let spanForClose = createElement('span', {style: "float: right;"}, btnClose);
+      headerDiv.appendChild(this.btnPauseContinue);
+      headerDiv.appendChild(document.createTextNode(" Popvar " + PopUpWindow.popupCounter));
+      let spanForClose = createElement('span', { style: "float: right;" }, btnClose);
       headerDiv.appendChild(spanForClose);
       this.container.appendChild(headerDiv);
       this.container.appendChild(this.outputEl);
       document.body.appendChild(this.container);
 
-      headerDiv.onmousedown = (e)=>this.startDrag(e);
-    }
-    
-    printVariable(){
-      this.outputEl.innerHTML = '';
-      this.printVar(terminalGetGlobal(this.variableName), this.variableName);
-      // this.printVar(this.options, "this.options");
+      headerDiv.onmousedown = (e) => this.startDrag(e);
     }
 
-    closePopup(){
+    onPausePlay() {
+      if (this.intervalId === 0) {
+        this.intervalId = setInterval(() => this.printVariable(), 1000);
+        this.printVariable();
+        this.btnPauseContinue.innerHTML = PAUSE_SYMBOL;
+        this.btnPauseContinue.title = "pause";
+      } else {
+        clearInterval(this.intervalId);
+        this.intervalId = 0;
+        this.btnPauseContinue.innerHTML = "&#9658;";
+        this.btnPauseContinue.title = "play";
+      }
+    }
+
+    printVariable() {
+      const oldOutput = this.outputEl;
+      const outputStyle = 'margin: 2px; font-family: Monospace, Incosolata, Courier; font-size: 12px; line-height: 1.05;';// overflow-y: scroll; max-height: ' + (window.innerHeight-80) +'px;';
+      this.outputEl = createElement('pre', { style: outputStyle });
+      this.printVar(terminalGetGlobal(this.variableName), this.variableName);
+      // this.printVar(this.options, "this.options");
+      oldOutput.replaceWith(this.outputEl);
+    }
+
+    closePopup() {
       document.body.removeChild(this.container);
     }
 
-    startDrag(e){
+    startDrag(e) {
+      if( e.button !== 0) return;
       e.preventDefault();
       this.pos3 = e.clientX;
       this.pos4 = e.clientY;
-      document.onmouseup = ()=>this.endDrag();
-      document.onmousemove = (e)=>this.dragPopup(e);
+      document.onmouseup = () => this.endDrag();
+      document.onmousemove = (e) => this.dragPopup(e);
     }
 
-    dragPopup(e){
+    dragPopup(e) {
       // e = e || window.event;
       e.preventDefault();
       this.pos1 = this.pos3 - e.clientX;
@@ -76,7 +105,7 @@
       this.container.style.left = (this.container.offsetLeft - this.pos1) + "px";
     }
 
-    endDrag(){
+    endDrag() {
       document.onmouseup = null;
       document.onmousemove = null;
     }

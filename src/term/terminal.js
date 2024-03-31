@@ -218,13 +218,13 @@ class WTerminal {
       this.outputEl.scrollTop = 0;
       this.inputTextEl.focus();
     }
-    btnScrollTop.onclick = (e) => this.scrollToTop();
+    btnScrollTop.onclick = () => this.scrollToTop();
 
     this.scrollToBottom = function() {
-      this.outputEl.scrollTop = output.scrollHeight;
+      this.outputEl.scrollTop = this.outputEl.scrollHeight;
       this.inputTextEl.focus();
     }
-    btnScrollBottom.onclick = (e) => this.scrollToBottom();
+    btnScrollBottom.onclick = () => this.scrollToBottom();
 
     container.onclick = function(event) {
       // clicking in the terminal should not close it
@@ -545,18 +545,18 @@ class WTerminal {
           this.printLn(prefix, name, " = (", this._getObjType(obj), "){");
           this.printLn(prefix + this.options.tpo_specialPrefix, "tagName = ", obj.tagName);
           if (obj.attributes.length != 0) {
-            let attr = "";
+            let attr = {};
             for (let i = 0; i < obj.attributes.length; i++) {
               let a = obj.attributes[i];
               if (a.value !== '') {
-                if (attr.length != 0) attr += " ";
-                attr += a.name + "=`" + a.value + "`";
+                attr[a.name] = a.value;
               }
             }
-            this.printLn(prefix + this.options.tpo_specialPrefix, "attributes = { ", attr, " }");
-            if (obj.children && obj.children.length > 0) {
-              this.printLn(prefix + this.options.tpo_specialPrefix, "childrenCount = ", obj.children.length);
-            }
+            // this.printLn(prefix + this.options.tpo_specialPrefix, "attributes = { ", attr, " }");
+            this.printVar(attr, "attributes", prefix + this.options.tpo_specialPrefix);
+          }
+          if (obj.children && obj.children.length > 0) {
+            this.printLn(prefix + this.options.tpo_specialPrefix, "childrenCount = ", obj.children.length);
           }
           this.printLn(prefix, "}");
         } else if (obj instanceof Error) {
