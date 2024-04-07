@@ -261,7 +261,7 @@ class WTerminal {
       const background = createElement('div', { class: TERMINAL_BACKGROUND_CLASS, title: "Close terminal" });
       this.backgroundEl = background;
 
-      const btnClose = createElement('button', { title: "Scroll to top" });//, "&#10006;")
+      const btnClose = createElement('button', { title: "Close terminal" });//, "&#10006;")
       btnClose.innerHTML = "&#10006;";
       btnClose.onclick = (e) => this.terminalClose();
       this.onDocBodyKeyDown = function(event) {
