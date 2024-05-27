@@ -5,7 +5,7 @@
 */
 
 //TERMINAL const
-const TERMINAL_VERSION = "1.1.0" // terminal version, duh.
+const TERMINAL_VERSION = "1.1.1" // terminal version, duh.
 //css & html element relations:
 const TERMINAL_CSS_LINK_URL = "term/terminal.css"; // the link to auto insert when terminal initializes and TERMINAL_AUTO_INSERT_CSS = true
 const TERMINAL_CSS_LINK_ID = "terminal-css";
