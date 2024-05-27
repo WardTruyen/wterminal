@@ -1,5 +1,5 @@
 /* Author: Ward Truyen
-* Version: 1.1.0
+* Version: 1.1.1
 * About:   This started as a library of functions for output/printing to a 'terminal'
 *          But then the terminal got bigger and more fun!
 */
@@ -514,7 +514,12 @@ class WTerminal {
         objType += " Float64Array";
       } else {
         try {
-          objType = Object.getPrototypeOf(obj).toString().replace('[', '').replace(']', '');
+          let className = Object.getPrototypeOf(obj).toString().replace('[', '').replace(']', '');
+          if( className == 'object Object' && typeof obj.constructor != 'undefined'){
+            objType += ' ' + obj.constructor.name;
+          }else{
+            objType = className;
+          }
         } catch (e) {
           if (obj instanceof Element) {
             objType += " Element";
