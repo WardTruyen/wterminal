@@ -5,7 +5,8 @@
 */
 
 {// this code block hides the variables below from other scripts.
-  const PAUSE_SYMBOL = "&#9724;"
+  const PAUSE_SYMBOL = "&#9724;";
+  const INTERVAL_TIME = "1000"; // 1000 == 1second
 
   class PopUpWindow {
     static popupCounter = 0;
@@ -26,12 +27,12 @@
       o.tpo_innerMaxLength = to.tpo_innerMaxLength;
       this.createPopup();
       this.printVariable();
-      this.intervalId = setInterval(() => this.printVariable(), 1000);
+      this.intervalId = setInterval(() => this.printVariable(), INTERVAL_TIME);
     }
 
     createPopup() {
       const t = 2 + PopUpWindow.popupCounter++;
-      let containerStyle = 'border: 1px solid black; z-index: 9990; position: absolute; background: #ffffffa0; border-radius: 2px; backdrop-filter: blur(3px);';
+      let containerStyle = 'border: 1px solid black; z-index: 9990; position: absolute; background: #ffffffa0; border-radius: 2px; backdrop-filter: blur(3px); box-shadow: 3px 3px 3px #00000066;';
       containerStyle += ` top: ${t}em; left: ${t}em;`;
       this.container = createElement('div', { style: containerStyle, title: this.variableName });
       const outputStyle = 'margin: 2px; font-family: Monospace, Incosolata, Courier; font-size: 12px; line-height: 1.05;';// overflow-y: scroll; max-height: ' + (window.innerHeight-80) +'px;';
@@ -60,7 +61,7 @@
 
     onPausePlay() {
       if (this.intervalId === 0) {
-        this.intervalId = setInterval(() => this.printVariable(), 1000);
+        this.intervalId = setInterval(() => this.printVariable(), INTERVAL_TIME);
         this.printVariable();
         this.btnPauseContinue.innerHTML = PAUSE_SYMBOL;
         this.btnPauseContinue.title = "pause";
@@ -77,7 +78,6 @@
       const outputStyle = 'margin: 2px; font-family: Monospace, Incosolata, Courier; font-size: 12px; line-height: 1.05;';// overflow-y: scroll; max-height: ' + (window.innerHeight-80) +'px;';
       this.outputEl = createElement('pre', { style: outputStyle });
       this.printVar(terminalGetGlobal(this.variableName), this.variableName);
-      // this.printVar(this.options, "this.options");
       oldOutput.replaceWith(this.outputEl);
     }
 
@@ -139,11 +139,11 @@
       pt: "popvar terminal",
     };
 
-    //add commands in ext
-    if (terminalAddCommand === undefined) {
+    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
       console.error("terminalAddCommand is missing!");
       return;
     }
+    //add commands in ext
     for (let c of Object.keys(ext)) {
       terminalAddCommand(c, ext[c].run, ext[c].help);
     }

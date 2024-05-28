@@ -29,9 +29,12 @@
       }
       term.printLn("activated");
     }
+    
+    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
+      console.error("terminalAddCommand is missing!");
+      return;
+    }
     terminalAddCommand("timerdebug", run, help);
-    //add alias
-    // terminalAddAlias("x", "y");
   };
   //init
   if (document.body) {
