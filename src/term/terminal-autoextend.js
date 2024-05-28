@@ -8,16 +8,16 @@
   const addScripts = function() {
     // location of script files
     const extentionScripts = [
-      "term/terminal-variables.js",
-      "term/terminal-cookies.js",
-      "term/terminal-eval.js",
-      "term/terminal-timerdebug.js",
-      "term/terminal-stresstest.js",
-      "term/terminal-popvar.js",
-      "term/terminal-passw.js",
-      // "term/terminal-featuretest.js",
-      // "term/terminal-forcelocals.js",
-      // "term/terminal-transfer.js", // only for browser-extention
+      "../termext/terminal-variables.js",
+      "../termext/terminal-cookies.js",
+      "../termext/terminal-eval.js",
+      "../termext/terminal-timerdebug.js",
+      "../termext/terminal-stresstest.js",
+      "../termext/terminal-popvar.js",
+      "../termext/terminal-passw.js",
+      // "../termext/terminal-featuretest.js",
+      // "../termext/terminal-forcelocals.js",
+      // "../termext/terminal-transfer.js", // only for browser-extention
     ];
 
     for (let ext of extentionScripts) {

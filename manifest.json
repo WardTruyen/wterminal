@@ -14,9 +14,9 @@
     {
       "matches": ["<all_urls>"],
       "js": ["src/term/terminal.js", "src/term/addonterminal.js",
-        "src/term/terminal-cookies.js", "src/term/terminal-eval.js",
-        "src/term/terminal-popvar.js", "src/term/terminal-passw.js", "src/term/terminal-timerdebug.js", 
-        "src/term/terminal-transfer.js", "src/term/terminal-stresstest.js", "src/term/terminal-variables.js"],
+        "src/termext/terminal-cookies.js", "src/termext/terminal-eval.js",
+        "src/termext/terminal-popvar.js", "src/termext/terminal-passw.js", "src/termext/terminal-timerdebug.js", 
+        "src/termext/terminal-transfer.js", "src/termext/terminal-stresstest.js", "src/termext/terminal-variables.js"],
       "css": ["src/term/terminal.css"]
     }
   ]
