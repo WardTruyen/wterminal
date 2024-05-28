@@ -5,6 +5,7 @@
  *     This is a simple elegant sample for how to work with a Canvas
  */
 // Our variables we're using for setup
+const DEBUG_PONG_PARENT_GLOBAL = true;
 const DEBUG_PONG_FRAMERATE = false;
 const PONG_AUTO_CONTINUE_ON_FOCUS = false;
 // const PONG_UPDATE_INTERVAL = 1000 / 60; // go for 60 fps
@@ -110,6 +111,9 @@ class PingPong {
       this.fpsLabel = document.createElement('span');
       el.appendChild(this.fpsLabel);
       this.divEl.appendChild(el);
+    }
+    if(DEBUG_PONG_PARENT_GLOBAL){
+      window.game = this;
     }
 
     // start
