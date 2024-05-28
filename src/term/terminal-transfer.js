@@ -14,25 +14,24 @@
     }
     const run = function(term) {
       term.printLn("Transfer warning: Expect difficulties debugging errors.");
-      term.printLn("When, after transfer, the new (transfered) terminal does not open check the console,");
-      term.printLn("if the error points to document.body.appendChild(scriptNode);, the generated script has a bug.");
+      term.print("When, after transfer, the new (transfered) terminal does not open check the console,");
+      term.printLn("if the error points to document.body.appendChild(scriptNode); then the generated script has a bug."); //generated script == tempScript
 
       try {
-        term.terminalClose();
         //addon-terminal todo: try adding terminalPrint functions to the page!
         let scriptNode = document.getElementById(TRANSFER_SCRIPT_ID);
         if (scriptNode === null) {
           scriptNode = document.createElement("script");
           scriptNode.id = TRANSFER_SCRIPT_ID;
           scriptNode.type = "text/javascript";
-        } else{
+        } else {
           while (scriptNode.firstChild) {
             scriptNode.removeChild(scriptNode.lastChild);
           }
         }
- 
+
         //create script
-        let tempScript = `
+        let tempScript = `{
 console.log("loading ${TRANSFER_SCRIPT_ID}");
 const TERMINAL_VERSION = "${TERMINAL_VERSION}";
 const TERMINAL_CSS_LINK_URL = "${TERMINAL_CSS_LINK_URL}";
@@ -69,52 +68,57 @@ const TPO_MAX_DEPTH = ${TPO_MAX_DEPTH};
 const TPO_INNER_MAX_LENGTH = ${TPO_INNER_MAX_LENGTH};
 `;
         tempScript += `
-createElement = ${createElement};
-splitToArguments = ${splitToArguments};
-stringToValue = ${stringToValue};
-terminalGetGlobal = ${terminalGetGlobal};
-createTerminalGlobal = ${createTerminalGlobal};
+const createElement = ${createElement};
+const splitToArguments = ${splitToArguments};
+const stringToValue = ${stringToValue};
+const getGlobalVariable = ${getGlobalVariable};
+const createTerminalGlobal = ${createTerminalGlobal};
 createTerminalGlobal();
-instalDropdownTerminal = ${instalDropdownTerminal};
-terminalAddCommand = ${terminalAddCommand};
-terminalAddAlias = ${terminalAddAlias};
-terminalPrint = ${terminalPrint};
-terminalPrintLn = ${terminalPrintLn};
-getTerminal = ${getTerminal};
+const instalDropdownTerminal = ${instalDropdownTerminal};
+const terminalAddCommand = ${terminalAddCommand};
+const terminalAddAlias = ${terminalAddAlias};
+const terminalPrint = ${terminalPrint};
+const terminalPrintLn = ${terminalPrintLn};
+const getTerminal = ${getTerminal};
 `;
         tempScript += `
 ${WTerminal};
 `;
         tempScript += `
 //Relaunch
-function relaunchTerminal(){
+const relaunchWTerminal = function(){
   try{
     let terminal = new WTerminal("dropdown", null, null);
     terminal.terminalOpen();
     terminal.printLn("This Terminal was transfered.");
     terminal.commandListExtension = {`;
-        for(let el in term.commandListExtension){
-          if(el == "transfer") continue;
+        for (let el in term.commandListExtension) {
+          if (el == "transfer") continue;
           tempScript += `${el}: { run: ${term.commandListExtension[el].run}, help: ${term.commandListExtension[el].help} },`
         }
         tempScript += `
     };
     terminal.aliasExtensionList = ${JSON.stringify(term.aliasExtensionList)};
-    terminal.inputTextEl.focus();
+    terminal.printLn("Extentions transfered.");
+    terminal.printLn("Press '"+terminal.options.keyOpen + ((!terminal.options.keyOpenCtrl)?'" + CTRL':'"')+" to open the other terminal.");
+    setInterval(()=>terminal.inputTextEl.focus(),100);
   } catch(e){
     console.log("failed to transfer terminal");
     console.error(e);
   }
 };
-relaunchTerminal();
-`;
+relaunchWTerminal();
+}`;
         /* tempScript = `console.log("ik werk wel!");`;*/
         scriptNode.appendChild(document.createTextNode(tempScript));
         // scriptNode.innerHTML = tempScript;
-        if(document.getElementById(TRANSFER_SCRIPT_ID) === null){
+        if (document.getElementById(TRANSFER_SCRIPT_ID) === null) {
           document.body.appendChild(scriptNode);
         }
-        term.printLn("transfer done");
+        term.printLn("Transfer done");
+        term.options.keyOpenCtrl = !term.options.keyOpenCtrl;
+        term.printLn(`Press '${term.options.keyOpen + ((!term.options.keyOpenCtrl) ? '" + CTRL' : '"')} to open the other terminal.`);
+        term.terminalClose();
       } catch (e) {
         term.printVar("Transfer error: ", e);
         return e;
