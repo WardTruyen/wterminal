@@ -1,31 +1,27 @@
 /* Author: Ward Truyen
 * Version: 1.0.0
-* About:   This adds the test command to the terminal.
-*               current test is to get local variables
+* About:   This adds the eval command to the terminal.
 */
 {
-  const initTerminalEvalCommand = function() {
-    const help = function(term) {
-      term.printLn("Uses the function eval(string) on the argLine");
+  const evalHelp = function(term) {
+    term.printLn("Uses the function eval(string) on the argLine");
+  }
+  const evalRun = function(term, argLine) {
+    try {
+      const result = eval(argLine);
+      term.printVar(result, '`' + argLine + '`');
+      return result;
+    } catch (error) {
+      term.printError(`Eval error: \`${argLine}\` -> ${error.message}`);
     }
-    const run = function(term, argLine) {
-      //todo: test (local) variable grabbing == works
-      try {
-        const result = eval(argLine);
-        term.printVar(result, '`' + argLine + '`');
-        return result;
-      } catch (error) {
-        // term.printVar(error, `<span style='color:red;'>Eval error: \`${argLine}\`</span>`);
-        term.printError(`Eval error: \`${argLine}\` -> ${error.message}`);
-        // throw error;
-      }
-    };
-    //add command
-    if (terminalAddCommand === undefined) {
+  };
+  
+  const initTerminalEvalCommand = function() {
+    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
       console.error("terminalAddCommand is missing!");
       return;
     }
-    terminalAddCommand("eval", run, help);
+    terminalAddCommand("eval", evalRun, evalHelp);
   };
   //init
   if (document.body) {
