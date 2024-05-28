@@ -1,11 +1,11 @@
 /* Author: Ward Truyen
-* Version: 1.2.0
+* Version: 1.2.1
 * About:   This started as a library of functions for output/printing to a 'terminal'
 *          But then the terminal got bigger and more fun!
 */
 
 //TERMINAL const
-const TERMINAL_VERSION = "1.2.0" // terminal version, duh.
+const TERMINAL_VERSION = "1.2.1" // terminal version, duh.
 //css & html element relations:
 const TERMINAL_CSS_LINK_URL = "../term/terminal.css"; // the link to auto insert when terminal initializes and TERMINAL_AUTO_INSERT_CSS = true
 const TERMINAL_CSS_LINK_ID = "terminal-css";
