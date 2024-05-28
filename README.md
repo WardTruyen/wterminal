@@ -26,9 +26,10 @@ Terminal static
 
 ## Terminal as WebExtension
 
-You can also use this terminal-project as a browser-extension. Get a terminal everywhere you surf.
+You can also use this terminal-project as a (Temporary) browser-extension. Get a terminal everywhere you surf.
 
-Howto: 
+How to documentation: 
 
 - [MDN WebExtension](https://developer.mozilla.org/en-US/diocs/Mozilla/Add-ons/WebExtensions/Your_first_WebExtension)
-- [firefox about:debugging](https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html)
+- [firefox info](https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html#this-firefox)
+- [firefox about:debugging](about:debugging)
