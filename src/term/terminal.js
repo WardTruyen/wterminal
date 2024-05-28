@@ -515,9 +515,9 @@ class WTerminal {
       } else {
         try {
           let className = Object.getPrototypeOf(obj).toString().replace('[', '').replace(']', '');
-          if( className == 'object Object' && typeof obj.constructor != 'undefined'){
+          if (className == 'object Object' && typeof obj.constructor != 'undefined') {
             objType += ' ' + obj.constructor.name;
-          }else{
+          } else {
             objType = className;
           }
         } catch (e) {
@@ -1301,10 +1301,10 @@ const terminalPrintLn = function(...args) {
 }
 
 const terminalOpen = function() {
-  if(WTerminal.terminals.dropdown){
+  if (WTerminal.terminals.dropdown) {
     WTerminal.terminals.dropdown.terminalOpen();
-  }else{
-    if (confirm("Dropdown terminal is not available. Create terminal?")){
+  } else {
+    if (confirm("Dropdown terminal is not available. Create terminal?")) {
       instalDropdownTerminal();
       WTerminal.terminals.dropdown.terminalOpen();
     }

@@ -4,28 +4,28 @@
 *               current test is to get local variables
 */
 {
-  const addExtention = function() {
-    const help = function(term) {
-      term.printLn("Runs a test (nothing).");
-    }
-    const run = function(term) {
-      term.printLn("Feature test warning: Under construction, can have unexpected results, errors and crashes.");
-      // todo: add test ... like throw errors and stuff
+  const help = function(term) {
+    term.printLn("Runs a test (nothing).");
+  }
+  const run = function(term) {
+    term.printLn("Feature test warning: Under construction, can have unexpected results, errors and crashes.");
+    // todo: add test ... like throw errors and stuff
 
-      // throw {name : "NotImplementedError", message : "too lazy to implement"};
-      // throw new Error("too lazy to implement", "some name perhaps?");
-      // class TerminalError extends Error{
-      //   constructor(msg, name="TerminalError"){
-      //     super(msg);
-      //     this.name = name;
-      //   }
-      // }
-      // throw new TerminalError("my message", "MyName");
-      let num = 1;
-      num.toPrecision(500);
-    };
-    //add command
-    if (terminalAddCommand === undefined) {
+    // throw {name : "NotImplementedError", message : "too lazy to implement"};
+    // throw new Error("too lazy to implement", "some name perhaps?");
+    // class TerminalError extends Error{
+    //   constructor(msg, name="TerminalError"){
+    //     super(msg);
+    //     this.name = name;
+    //   }
+    // }
+    // throw new TerminalError("my message", "MyName");
+    let num = 1;
+    num.toPrecision(500);
+  };
+
+  const addExtention = function() {
+    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
       console.error("AddExtention Error: TerminalAddCommand is missing!");
       return;
     }
