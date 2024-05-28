@@ -31,7 +31,7 @@
 
     createPopup() {
       const t = 2 + PopUpWindow.popupCounter++;
-      let containerStyle = 'border: 1px solid black; z-index: 9990; position: absolute; background: #ffffffa0; border-radius: 2px; backdrop-filter: blur(3px);';
+      let containerStyle = 'border: 1px solid black; z-index: 9990; position: absolute; background: #ffffffa0; border-radius: 2px; backdrop-filter: blur(3px); box-shadow: 3px 3px 3px #00000066;';
       containerStyle += ` top: ${t}em; left: ${t}em;`;
       this.container = createElement('div', { style: containerStyle, title: this.variableName });
       const outputStyle = 'margin: 2px; font-family: Monospace, Incosolata, Courier; font-size: 12px; line-height: 1.05;';// overflow-y: scroll; max-height: ' + (window.innerHeight-80) +'px;';
