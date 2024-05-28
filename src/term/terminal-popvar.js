@@ -5,6 +5,7 @@
 */
 
 {// this code block hides the variables below from other scripts.
+  const runPopVar = function(term, argLine){
   const PAUSE_SYMBOL = "&#9724;";
   const INTERVAL_TIME = "1000"; // 1000 == 1second
 
@@ -110,11 +111,6 @@
       document.onmousemove = null;
     }
   };
-
-  const initTerminalVariableCommands = function() {
-    const ext = {
-      popvar: {
-        run: function(term, argLine) {
           if (globalThis === undefined) {
             term.printError("Do error: Missing globalThis");
           } else if (argLine == '') {
@@ -123,7 +119,12 @@
             // return new PopUpWindow(argLine, term);
             new PopUpWindow(argLine, term);
           }
-        },
+  }
+
+  const initTerminalVariableCommands = function() {
+    const ext = {
+      popvar: {
+        run: runPopVar,
         help: function(term) {
           term.printLn("Creates a popup window with (refreshable) the given variable contents.");
           term.printBold("Usage:");

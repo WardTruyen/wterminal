@@ -3,16 +3,16 @@
 * About:   This adds a password generatiing- and testing function
 */
 {
-  const UPPERCASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const LOWERCASE_LETTERS = "abcdefghijklmnopqrstuvwxyz";
-  const NUMBERS = "1234567890";
-  const SPECIAL_CHARACTERS = "!@#$%^&*()_-+=,./<>\\|[]{}";
-  const ALL_CHARACTERS = UPPERCASE_LETTERS + LOWERCASE_LETTERS + NUMBERS + SPECIAL_CHARACTERS;
 
   const generatePasswordHelp = function(term) {
     term.printLn("Generates a new password and prints it out. But also copies it for you.");
   }
   const generatePassword = function(term, argLine) {
+    const UPPERCASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const LOWERCASE_LETTERS = "abcdefghijklmnopqrstuvwxyz";
+    const NUMBERS = "1234567890";
+    const SPECIAL_CHARACTERS = "!@#$%^&*()_-+=,./<>\\|[]{}";
+    const ALL_CHARACTERS = UPPERCASE_LETTERS + LOWERCASE_LETTERS + NUMBERS + SPECIAL_CHARACTERS;
     let passwd = "";
     let length = 15;
     for (let i = 0; i < length; i++) {
@@ -26,30 +26,30 @@
     navigator.clipboard.writeText(passwd);
   };
 
-  const sha1 = function(string) {
-    const buffer = new TextEncoder("utf-8").encode(string);
-    return crypto.subtle.digest("SHA-1", buffer).then(function(buffer) {
-      // Get the hex code
-      let hexCodes = [];
-      const padding = '00000000'
-      const view = new DataView(buffer);
-      for (let i = 0; i < view.byteLength; i += 4) {
-        // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
-        const value = view.getUint32(i)
-        // toString(16) will give the hex representation of the number without padding
-        const stringValue = value.toString(16)
-        // We use concatenation and slice for padding
-        const paddedValue = (padding + stringValue).slice(-padding.length)
-        hexCodes.push(paddedValue);
-      }
-      // Join all the hex strings into one
-      return hexCodes.join("");
-    });
-  };
   const isPasswordSafeHelp = function(term) {
     term.printLn("Checks if a password is posted as breached by pwnedpasswords.com");
   };
   const isPasswordSafe = function(term, argLine) {
+    const sha1 = function(string) {
+      const buffer = new TextEncoder("utf-8").encode(string);
+      return crypto.subtle.digest("SHA-1", buffer).then(function(buffer) {
+        // Get the hex code
+        let hexCodes = [];
+        const padding = '00000000'
+        const view = new DataView(buffer);
+        for (let i = 0; i < view.byteLength; i += 4) {
+          // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
+          const value = view.getUint32(i)
+          // toString(16) will give the hex representation of the number without padding
+          const stringValue = value.toString(16)
+          // We use concatenation and slice for padding
+          const paddedValue = (padding + stringValue).slice(-padding.length)
+          hexCodes.push(paddedValue);
+        }
+        // Join all the hex strings into one
+        return hexCodes.join("");
+      });
+    };
     const password = argLine;
     term.printLn("Checking password, please wait...");
 
