@@ -77,7 +77,7 @@
       const oldOutput = this.outputEl;
       const outputStyle = 'margin: 2px; font-family: Monospace, Incosolata, Courier; font-size: 12px; line-height: 1.05;';// overflow-y: scroll; max-height: ' + (window.innerHeight-80) +'px;';
       this.outputEl = createElement('pre', { style: outputStyle });
-      this.printVar(terminalGetGlobal(this.variableName), this.variableName);
+      this.printVar(getGlobalVariable(this.variableName), this.variableName);
       oldOutput.replaceWith(this.outputEl);
     }
 

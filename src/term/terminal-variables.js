@@ -40,7 +40,7 @@
               result = _doFunction(globalThis, gName, args)
             } else {
               const lastName = pName.pop(); //last object name
-              result = _doFunction(terminalGetGlobal(pName.join('.')), lastName, args);
+              result = _doFunction(getGlobalVariable(pName.join('.')), lastName, args);
             }
             if (verbal) term.printVar(result, gName + "(" + args.join(' ') + ")");
             return result;
@@ -67,7 +67,7 @@
             let result = {};
             const args = splitToArguments(argLine);
             for (const gName of args) {
-              result[gName] = terminalGetGlobal(gName);
+              result[gName] = getGlobalVariable(gName);
             }
             const keys = Object.keys(result);
             if (keys.length == 1) {
@@ -122,7 +122,7 @@
               args = args.filter(e => e !== '-r');
             }
             for (const gName of args) {
-              result[gName] = terminalGetGlobal(gName);
+              result[gName] = getGlobalVariable(gName);
             }
             if (Object.keys(result).length == 1) {
               result = result[Object.keys(result)[0]];
@@ -150,7 +150,7 @@
               args = args.filter(e => e !== '-r');
             }
             for (const gName of args) {
-              result[gName] = terminalGetGlobal(gName);
+              result[gName] = getGlobalVariable(gName);
             }
             const keys = Object.keys(result);
             if (keys.length == 1) {
@@ -224,7 +224,7 @@
               const lastName = pName.pop(); //last object name
               let obj = globalThis;
               if (pName.length > 0) {
-                obj = terminalGetGlobal(pName.join('.')); //parent object
+                obj = getGlobalVariable(pName.join('.')); //parent object
               }
               if (obj !== undefined && obj[lastName] !== undefined) {
                 if (verbal) term.printLn("removing: " + gName)
