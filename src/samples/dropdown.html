@@ -6,8 +6,8 @@
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/darkmode.css" />
 
-  <script src="../term/terminal.js"></script>
-  <script src="../term/terminal-autoextend.js"></script>
+  <script src="../term/wterminal.js"></script>
+  <script src="../term/wterminal-autoextend.js"></script>
 
   <script src="js/cookie.js"></script>
   <script src="js/darkmode-cookie.js"></script>
@@ -17,7 +17,7 @@
   <header>
     <a href="index.html">Home</a>
     <a href="static-terminal.html">Static terminal</a>
-    <a href="terminal.html">Dropdown terminal</a>
+    <a href="dropdown.html">Dropdown terminal</a>
     <a href="pong.html">Pong</a>
   </header>
 
@@ -29,10 +29,10 @@
       <li>Close: press Escape</li>
     </ul>
     <h2>extra</h2>
-    <button onclick="WTerminal.terminals.dropdown.terminalOpen()">Open terminal</button>
+    <button onclick="WTerminal.open()">Open terminal</button>
     <button id="btnDarkmode" onclick="btn_darkmode_switch();">dark mode</button>
     <script>
-      instalDropdownTerminal();
+      WTerminal.instalDropdownTerminal();
     </script>
   </main>
 

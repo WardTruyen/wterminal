@@ -13,11 +13,11 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/term/terminal.js", "src/term/addonterminal.js",
-        "src/termext/terminal-cookies.js", "src/termext/terminal-eval.js",
-        "src/termext/terminal-popvar.js", "src/termext/terminal-passw.js", "src/termext/terminal-timerdebug.js", 
-        "src/termext/terminal-transfer.js", "src/termext/terminal-stresstest.js", "src/termext/terminal-variables.js"],
-      "css": ["src/term/terminal.css"]
+      "js": ["src/term/wterminal.js", "src/term/wterminal-addon.js",
+        "src/termext/ext-cookies.js", "src/termext/ext-eval.js",
+        "src/termext/ext-popvar.js", "src/termext/ext-passw.js", "src/termext/ext-timerdebug.js", 
+        "src/termext/ext-transfer.js", "src/termext/ext-stresstest.js", "src/termext/ext-variables.js"],
+      "css": ["src/term/wterminal.css"]
     }
   ]
 

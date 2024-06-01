@@ -1,9 +1,16 @@
 /* Author: Ward Truyen
 * Version: 1.0.0
 */
-canvas{
-  margin: auto;
-  display: block;
+.game-area {
+  margin: 8px auto;
+  width: fit-content;
+}
+
+.game-area p {
+  margin: 0 2px;
+}
+
+canvas {
   border: solid 2px #3b3b3b;
   border-radius: 4px;
   outline: none;

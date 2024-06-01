@@ -33,53 +33,6 @@
         //create script
         let tempScript = `{
 console.log("loading ${TRANSFER_SCRIPT_ID}");
-const TERMINAL_VERSION = "${TERMINAL_VERSION}";
-const TERMINAL_CSS_LINK_URL = "${TERMINAL_CSS_LINK_URL}";
-const TERMINAL_CSS_LINK_ID = "${TERMINAL_CSS_LINK_ID}";
-const TERMINAL_BACKGROUND_CLASS = "${TERMINAL_BACKGROUND_CLASS}";
-const TERMINAL_CONTAINER_CLASS = "${TERMINAL_CONTAINER_CLASS}";
-const TERMINAL_OUTPUT_CLASS = "${TERMINAL_OUTPUT_CLASS}";
-const TERMINAL_INPUT_CLASS = "${TERMINAL_INPUT_CLASS}";
-const TERMINAL_VISIBLE_CLASS = "${TERMINAL_VISIBLE_CLASS}";
-const TERMINAL_GLOBAL_LAST_RESULT = ${TERMINAL_GLOBAL_LAST_RESULT};
-const TERMINAL_GLOBAL_LAST_ERROR = ${TERMINAL_GLOBAL_LAST_ERROR};
-const TERMINAL_GLOBAL_HISTORY = ${TERMINAL_GLOBAL_HISTORY};
-const TERMINAL_GLOBAL_TEST_VARIABLES = ${TERMINAL_GLOBAL_TEST_VARIABLES};
-const TERMINAL_AUTO_INSERT_DROPDOWN = ${TERMINAL_AUTO_INSERT_DROPDOWN};
-const TERMINAL_AUTO_INSERT_CSS = ${TERMINAL_AUTO_INSERT_CSS};
-const TERMINAL_PRINT_LOGO = ${TERMINAL_PRINT_LOGO};
-const TERMINAL_KEY_OPEN = "${TERMINAL_KEY_OPEN}";
-const TERMINAL_KEY_OPEN_CTRL = ${TERMINAL_KEY_OPEN_CTRL};
-const TERMINAL_KEY_CLOSE = "${TERMINAL_KEY_CLOSE}";
-const TERMINAL_KEY_HISTORY = "${TERMINAL_KEY_HISTORY}";
-const TERMINAL_PRINT_TO_CONSOLE_LOG = ${TERMINAL_PRINT_TO_CONSOLE_LOG};
-const TERMINAL_SLASH_COMMANDS = ${TERMINAL_SLASH_COMMANDS};
-const TERMINAL_INPUT_STRICT = ${TERMINAL_INPUT_STRICT};
-const TERMINAL_PRINT_ALIAS_CHANGE = ${TERMINAL_PRINT_ALIAS_CHANGE};
-const TERMINAL_PRINT_INNER_COMMANDS = ${TERMINAL_PRINT_INNER_COMMANDS};
-const TERMINAL_PRINT_COMMAND_RETURN = ${TERMINAL_PRINT_COMMAND_RETURN};
-const TERMINAL_MAX_HISTORY = ${TERMINAL_MAX_HISTORY};
-const TERMINAL_PRINT_ALIAS_ADD = ${TERMINAL_PRINT_ALIAS_ADD};
-const TERMINAL_PRINT_EXTENSION_ADD = ${TERMINAL_PRINT_EXTENSION_ADD};
-const TPO_UNKNOWN_OBJECT_PRINT = ${TPO_UNKNOWN_OBJECT_PRINT};
-const TPO_OBJECT_PREFIX = "${TPO_OBJECT_PREFIX}";
-const TPO_SPECIAL_PREFIX = "${TPO_SPECIAL_PREFIX}";
-const TPO_MAX_DEPTH = ${TPO_MAX_DEPTH};
-const TPO_INNER_MAX_LENGTH = ${TPO_INNER_MAX_LENGTH};
-`;
-        tempScript += `
-const createElement = ${createElement};
-const splitToArguments = ${splitToArguments};
-const stringToValue = ${stringToValue};
-const getGlobalVariable = ${getGlobalVariable};
-const createTerminalGlobal = ${createTerminalGlobal};
-createTerminalGlobal();
-const instalDropdownTerminal = ${instalDropdownTerminal};
-const terminalAddCommand = ${terminalAddCommand};
-const terminalAddAlias = ${terminalAddAlias};
-const terminalPrint = ${terminalPrint};
-const terminalPrintLn = ${terminalPrintLn};
-const getTerminal = ${getTerminal};
 `;
         tempScript += `
 ${WTerminal};
@@ -101,7 +54,6 @@ const relaunchWTerminal = function(){
     terminal.aliasExtensionList = ${JSON.stringify(term.aliasExtensionList)};
     terminal.printLn("Extentions transfered.");
     terminal.printLn("Press '"+terminal.options.keyOpen + ((!terminal.options.keyOpenCtrl)?'" + CTRL':'"')+" to open the other terminal.");
-    setInterval(()=>terminal.inputTextEl.focus(),100);
   } catch(e){
     console.log("failed to transfer terminal");
     console.error(e);
@@ -125,7 +77,7 @@ relaunchWTerminal();
       }
     };
 
-    terminalAddCommand(TRANSFER_COMMAND_NAME, run, help);
+    WTerminal.terminalAddCommand(TRANSFER_COMMAND_NAME, run, help);
   };
 
   if (document.body) {

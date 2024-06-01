@@ -30,11 +30,11 @@
       term.printLn("activated");
     }
     
-    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
-      console.error("terminalAddCommand is missing!");
+    if (WTerminal === undefined) { //is WTerminal not available?
+      console.error("WTerminal is missing!");
       return;
     }
-    terminalAddCommand("timerdebug", run, help);
+    WTerminal.terminalAddCommand("timerdebug", run, help);
   };
   //init
   if (document.body) {
