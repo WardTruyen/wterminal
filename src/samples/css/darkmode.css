@@ -7,62 +7,67 @@
   color: honeydew;
 }
 
-.dark-mode body{
+.dark-mode body {
   background-color: black;
   color: honeydew;
 }
 
-.dark-mode main{
+.dark-mode main {
   background-color: #1F1F1F;
   border: 2px solid #205060;
   box-shadow: 3px 3px 3px #4F4F4F;
 }
 
-.dark-mode button{
+.dark-mode button {
   background-color: #1F1F1F;
   color: white;
   border: 1px solid honeydew;
   border-radius: 3px;
 }
 
-.dark-mode input[type=submit]{
+.dark-mode input[type=submit] {
   background-color: #1F1F1F;
   color: white;
   border: 1px solid honeydew;
 }
 
-.dark-mode input{
+.dark-mode input {
   background-color: #1F1F1F;
   color: white;
   border: 1px solid honeydew;
 }
 
-.dark-mode input[type=button], input[type=submit], input[type=reset]{
+.dark-mode input[type=button],
+.dark-mode input[type=submit],
+.dark-mode input[type=reset] {
   border-radius: 3px;
 }
 
-.dark-mode input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover{
+.dark-mode input[type=button]:hover,
+.dark-mode input[type=submit]:hover,
+.dark-mode input[type=reset]:hover,
+.dark-mode button:hover {
   background-color: #4F4F4F;
 }
 
-.dark-mode footer{
+.dark-mode footer {
   background-image: linear-gradient(#FFFFFF4f, #FFFFFF2f);
   border-top: 1px solid grey;
 }
 
-.dark-mode .button-red{
+.dark-mode .button-red {
   background-color: darkred;
 }
 
-.dark-mode canvas{
+.dark-mode canvas {
   border: 1px solid #FFFFFF60;
 }
 
-.dark-mode a:visited{
+.dark-mode a:visited {
   color: #dd80dd;
 }
 
-.dark-mode a:hover{
+.dark-mode a:hover {
   color: #ff80aa;
 }
 
@@ -70,35 +75,36 @@
 * --- darkmode for terminal ---
 */
 
-.dark-mode .terminal-background .terminal-container{
+.dark-mode .wterminal-background .wterminal-container {
   background: unset;
   background-color: #000000;
-  color: #F0F0F0; 
+  color: #F0F0F0;
 }
 
-.dark-mode .terminal-output{
+.dark-mode .wterminal-output {
   background-color: #0F0F0F;
-  /* color: #F0F0F0; /* todo: try orange! */ 
+  /* color: #F0F0F0; /* todo: try orange! */
 }
 
-.dark-mode .terminal-input{
+.dark-mode .wterminal-input {
   background-color: #0F0F0F;
   color: #F0F0F0;
 }
 
-.dark-mode .terminal-container > form > input[type=submit]{
+.dark-mode .wterminal-container>form>input[type=submit] {
   background-color: #1F1F1F;
   color: white;
   border: 1px solid honeydew;
 }
 
-.dark-mode .terminal-input:hover{
-  background-color: #444;
-}
-.dark-mode .terminal-container input[type="submit"]:hover{
-  background-color: #444;
-}
-.dark-mode .terminal-container button:hover{
+.dark-mode .wterminal-input:hover {
   background-color: #444;
 }
 
+.dark-mode .wterminal-container input[type="submit"]:hover {
+  background-color: #444;
+}
+
+.dark-mode .wterminal-container button:hover {
+  background-color: #444;
+}

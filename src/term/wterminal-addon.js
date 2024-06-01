@@ -3,4 +3,4 @@
 * About:   this file is needed when the terminal is used as a browser-extention
 */
 
-instalDropdownTerminal();
+WTerminal.instalDropdownTerminal();

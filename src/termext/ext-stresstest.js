@@ -11,7 +11,7 @@
     };
     const run = function(term, argLine) {
       const testArgLine = function(str) {
-        term.printVar(splitToArguements(str), '`' + argLine + '`.<b>splitToArguements()</b>');
+        term.printVar(WTerminal.splitToArguments(str), '`' + argLine + '`.<b>splitToArguments()</b>');
       };
       if (argLine != '') testArgLine(argLine);
       term.terminalCommand("? && alias && const && option && date && time && uptime && starttime && echo OK", true);
@@ -25,11 +25,11 @@
       return term.lastResult;
     };
     //add command
-    if (terminalAddCommand === undefined) {
-      console.error("terminalAddCommand is missing!");
+    if (WTerminal === undefined) {
+      console.error("WTerminal is missing!");
       return;
     }
-    terminalAddCommand("stresstest", run, help);
+    WTerminal.terminalAddCommand("stresstest", run, help);
   };
   //init
   if (document.body) {

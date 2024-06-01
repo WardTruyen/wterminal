@@ -5,7 +5,7 @@
 
 if (typeof terminalAddCommand === "function") {
   //getcookie
-  terminalAddCommand("getcookie", (term, argLine) => {
+  WTerminal.WterminalAddCommand("getcookie", (term, argLine) => {
     function getCookie(name, defaultValue = undefined) {
       if (name === null || name === undefined || typeof name != "string" || name == '') {
         console.log('error: cookie needs a name');
@@ -18,19 +18,19 @@ if (typeof terminalAddCommand === "function") {
       else
         return pair.split('=')[1];
     }
-    return getCookie(...splitToArguements(argLine));
+    return getCookie(...WTerminal.splitToArguments(argLine));
   });
   //setcookie
-  terminalAddCommand("setcookie", (term, argLine) => {
+  WTerminal.terminalAddCommand("setcookie", (term, argLine) => {
     function setCookie(name, value = 1, days = 7) {
       let date = new Date();
       date.setDate(date.getDate() + days); // add x days to date
       document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; SameSite=strict; Secure";
     }
-    return setCookie(...splitToArguements(argLine));
+    return setCookie(...WTerminal.splitToArguments(argLine));
   });
   //removecookies
-  terminalAddCommand("removecookies", function(term) {
+  WTerminal.terminalAddCommand("removecookies", function(term) {
     function removeCookie(name) {
       document.cookie = name + "=0; max-age=-1" + "; SameSite=strict; Secure";
     }
@@ -47,7 +47,7 @@ if (typeof terminalAddCommand === "function") {
     });
   });
   //cookies
-  terminalAddCommand("cookies",
+  WTerminal.terminalAddCommand("cookies",
     function(term, argLine) {
       if (document.cookie === '') {
         if (!argLine.includes("-s")) term.printError("No cookies found.")
@@ -61,7 +61,7 @@ if (typeof terminalAddCommand === "function") {
       term.printLn("  cookies -s     //(silent)Prints only cookies, no error.");
     });
   //doCookiesWork
-  terminalAddCommand("docookieswork", (term) => {
+  WTerminal.terminalAddCommand("docookieswork", (term) => {
     function getCookie(name, defaultValue = undefined) {
       if (name === null || name === undefined || typeof name != "string" || name == '') {
         console.log('error: cookie needs a name');

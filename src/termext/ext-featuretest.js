@@ -25,13 +25,13 @@
   };
 
   const addExtention = function() {
-    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
-      console.error("AddExtention Error: TerminalAddCommand is missing!");
+    if (WTerminal === undefined) { //is WTerminal not available?
+      console.error("AddExtention Error: WTerminal is missing!");
       return;
     }
-    terminalAddCommand("featuretest", run, help);
+    WTerminal.terminalAddCommand("featuretest", run, help);
     //add alias
-    terminalAddAlias("ft", "featuretest");
+    WTerminal.terminalAddAlias("ft", "featuretest");
   };
   //init
   if (document.body) {

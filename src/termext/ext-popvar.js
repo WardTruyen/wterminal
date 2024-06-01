@@ -35,23 +35,23 @@
       const t = 2 + PopUpWindow.popupCounter++;
       let containerStyle = 'border: 1px solid black; z-index: 9990; position: absolute; background: #ffffffa0; border-radius: 2px; backdrop-filter: blur(3px); box-shadow: 3px 3px 3px #00000066;';
       containerStyle += ` top: ${t}em; left: ${t}em;`;
-      this.container = createElement('div', { style: containerStyle, title: this.variableName });
+      this.container = WTerminal.createElement('div', { style: containerStyle, title: this.variableName });
       const outputStyle = 'margin: 2px; font-family: Monospace, Incosolata, Courier; font-size: 12px; line-height: 1.05;';// overflow-y: scroll; max-height: ' + (window.innerHeight-80) +'px;';
-      this.outputEl = createElement('pre', { style: outputStyle });
-      this.btnPauseContinue = createElement('button', { title: "pause" });
+      this.outputEl = WTerminal.createElement('pre', { style: outputStyle });
+      this.btnPauseContinue = WTerminal.createElement('button', { title: "pause" });
       this.btnPauseContinue.innerHTML = PAUSE_SYMBOL;
       this.btnPauseContinue.addEventListener("click", () => this.onPausePlay());
-      let btnRefresh = createElement('button', { title: "refresh" });
+      let btnRefresh = WTerminal.createElement('button', { title: "refresh" });
       btnRefresh.innerHTML = '&#8635;';
       btnRefresh.addEventListener("click", () => this.printVariable());
-      let btnClose = createElement('button', { title: 'close' });
+      let btnClose = WTerminal.createElement('button', { title: 'close' });
       btnClose.addEventListener("click", () => this.closePopup());
       btnClose.innerHTML = "&#10006;";
-      let headerDiv = createElement('div', { style: "border-bottom: 1px solid black; padding: 2px; background: #00000060" });
+      let headerDiv = WTerminal.createElement('div', { style: "border-bottom: 1px solid black; padding: 2px; background: #00000060" });
       headerDiv.appendChild(btnRefresh);
       headerDiv.appendChild(this.btnPauseContinue);
       headerDiv.appendChild(document.createTextNode(" Popvar " + PopUpWindow.popupCounter));
-      let spanForClose = createElement('span', { style: "float: right;" }, btnClose);
+      let spanForClose = WTerminal.createElement('span', { style: "float: right;" }, btnClose);
       headerDiv.appendChild(spanForClose);
       this.container.appendChild(headerDiv);
       this.container.appendChild(this.outputEl);
@@ -77,8 +77,8 @@
     printVariable() {
       const oldOutput = this.outputEl;
       const outputStyle = 'margin: 2px; font-family: Monospace, Incosolata, Courier; font-size: 12px; line-height: 1.05;';// overflow-y: scroll; max-height: ' + (window.innerHeight-80) +'px;';
-      this.outputEl = createElement('pre', { style: outputStyle });
-      this.printVar(getGlobalVariable(this.variableName), this.variableName);
+      this.outputEl = WTerminal.createElement('pre', { style: outputStyle });
+      this.printVar(WTerminal.getGlobalVariable(this.variableName), this.variableName);
       oldOutput.replaceWith(this.outputEl);
     }
 
@@ -140,17 +140,17 @@
       pt: "popvar terminal",
     };
 
-    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
-      console.error("terminalAddCommand is missing!");
+    if (WTerminal === undefined) { //is WTerminal not available?
+      console.error("WTerminal is missing!");
       return;
     }
     //add commands in ext
     for (let c of Object.keys(ext)) {
-      terminalAddCommand(c, ext[c].run, ext[c].help);
+      WTerminal.terminalAddCommand(c, ext[c].run, ext[c].help);
     }
     //add aliases
     for (let c of Object.keys(aliases)) {
-      terminalAddAlias(c, aliases[c]);
+      WTerminal.terminalAddAlias(c, aliases[c]);
     }
   };
   //init

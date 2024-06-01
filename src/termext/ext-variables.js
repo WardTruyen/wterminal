@@ -27,7 +27,7 @@
           } else if (argLine == '') {
             term.printError("Do error: No name");
           } else {
-            let args = splitToArguments(argLine);
+            let args = WTerminal.splitToArguments(argLine);
             const verbal = args.includes("-v");
             if (verbal) {
               args = args.filter(e => e !== '-v');
@@ -65,7 +65,7 @@
             term.printError("Getvar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
-            const args = splitToArguments(argLine);
+            const args = WTerminal.splitToArguments(argLine);
             for (const gName of args) {
               result[gName] = getGlobalVariable(gName);
             }
@@ -116,7 +116,7 @@
             term.printError("LogVar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
-            let args = splitToArguments(argLine);
+            let args = WTerminal.splitToArguments(argLine);
             const returnResult = args.includes("-r");
             if (returnResult) {
               args = args.filter(e => e !== '-r');
@@ -144,7 +144,7 @@
             term.printError("PrintVar error: Missing argument: VARIABLE_NAME");
           } else {
             let result = {};
-            let args = splitToArguments(argLine);
+            let args = WTerminal.splitToArguments(argLine);
             const returnResult = args.includes("-r");
             if (returnResult) {
               args = args.filter(e => e !== '-r');
@@ -183,7 +183,7 @@
           } else if (argLine == '') {
             term.printError("RemoveVar error: Missing arguments");
           } else {
-            let args = splitToArguments(argLine);
+            let args = WTerminal.splitToArguments(argLine);
             const keys = Object.keys(globalThis);
             const verbal = args.includes("-v");
             if (verbal) {
@@ -265,7 +265,7 @@
             if (argLine == '') {
               term.printError("Setvar error: no name");
             } else {
-              let args = splitToArguments(argLine);
+              let args = WTerminal.splitToArguments(argLine);
               for (const element of args) {
                 const keyValuePair = element.split("=");
                 const names = keyValuePair[0].split(".");
@@ -326,16 +326,16 @@
     };
 
     //add commands in ext
-    if (terminalAddCommand === undefined) {
-      console.error("terminalAddCommand is missing!");
+    if (WTerminal === undefined) {
+      console.error("WTerminal is missing!");
       return;
     }
     for (let c of Object.keys(ext)) {
-      terminalAddCommand(c, ext[c].run, ext[c].help);
+      WTerminal.terminalAddCommand(c, ext[c].run, ext[c].help);
     }
     //add aliases
     for (let c of Object.keys(aliases)) {
-      terminalAddAlias(c, aliases[c]);
+      WTerminal.terminalAddAlias(c, aliases[c]);
     }
   };
   //init
