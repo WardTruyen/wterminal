@@ -401,7 +401,7 @@ class PingPong_CTX2D {
       this.scoreHuman++;
       if (typeof WTerminal === "function") WTerminal.printLn("Human scored!");
     }
-    if (typeof WTerminal === "function") WTerminal.printL("Scores: Human " + this.scoreHuman + " - " + this.scoreCpu + " CPU");
+    if (typeof WTerminal === "function") WTerminal.printLn("Scores: Human " + this.scoreHuman + " - " + this.scoreCpu + " CPU");
   }
 
   onKeyDown(e) {
