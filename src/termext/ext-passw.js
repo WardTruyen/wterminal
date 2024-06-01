@@ -79,13 +79,13 @@
   };
 
   const initTerminalPasswCommands = function() {
-    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
-      console.error("terminalAddCommand is missing!");
+    if (WTerminal === undefined) { //is WTerminal not available?
+      console.error("WTerminal is missing!");
       return;
     }
 
-    terminalAddCommand("generatepassword", generatePassword, generatePasswordHelp);
-    terminalAddCommand("ispasswordsafe", isPasswordSafe, isPasswordSafeHelp);
+    WTerminal.terminalAddCommand("generatepassword", generatePassword, generatePasswordHelp);
+    WTerminal.terminalAddCommand("ispasswordsafe", isPasswordSafe, isPasswordSafeHelp);
   };
   //init
   if (document.body) {

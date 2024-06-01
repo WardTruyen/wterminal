@@ -1,16 +1,16 @@
 const TERMINAL_NAME = "static";
 
 window.addEventListener("load", 
-  ()=>getTerminal(TERMINAL_NAME).inputTextEl.focus());
+  ()=>getWTerminal(TERMINAL_NAME).inputTextEl.focus());
 
 function btn_terminalHelp() {
-  let term = getTerminal(TERMINAL_NAME);
+  let term = getWTerminal(TERMINAL_NAME);
   term.terminalCommand("help");
   term.inputTextEl.focus();
 }
 
 function btn_promptSample() {
-  let term = getTerminal(TERMINAL_NAME);
+  let term = getWTerminal(TERMINAL_NAME);
   term.printTitle("Prompt sample:");
   let age = prompt("Enter your age:", "404");
   term.printLn("Age-input: " + age);
@@ -24,7 +24,7 @@ function btn_promptSample() {
 }
 
 function btn_kittySample() {
-  let term = getTerminal(TERMINAL_NAME);
+  let term = getWTerminal(TERMINAL_NAME);
   term.printTitle("Kitty sample:");
   term.printError("Error: Kitties are cute!");
   // term.printLn('<img src="img/kitty.jpg">Hello kitty!');
@@ -35,7 +35,7 @@ function btn_kittySample() {
 }
 
 function btn_printObjectSample() {
-  let term = getTerminal(TERMINAL_NAME);
+  let term = getWTerminal(TERMINAL_NAME);
   term.printTitle("print Object sample 1:");
   term.printVar("hello");
   term.printVar(3.1419);
@@ -48,7 +48,7 @@ function btn_printObjectSample() {
 }
 
 function btn_terminalClear(){
-  let term = getTerminal(TERMINAL_NAME);
+  let term = getWTerminal(TERMINAL_NAME);
   term.clearOutput();
   term.inputTextEl.focus();
 }

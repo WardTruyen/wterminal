@@ -17,11 +17,11 @@
   };
   
   const initTerminalEvalCommand = function() {
-    if (terminalAddCommand === undefined) { //is terminalAddCommand not available?
-      console.error("terminalAddCommand is missing!");
+    if (WTerminal === undefined) { //is WTerminal not available?
+      console.error("WTerminal is missing!");
       return;
     }
-    terminalAddCommand("eval", evalRun, evalHelp);
+    WTerminal.terminalAddCommand("eval", evalRun, evalHelp);
   };
   //init
   if (document.body) {

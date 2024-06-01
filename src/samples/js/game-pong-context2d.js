@@ -1,33 +1,6 @@
-/* Author:  Ward Truyen
- * Version:  1.0.0
- * Optional requirements: terminal.js (wterminal)
- * About Pong: Pingpong for HTML, you can insert it in anny Div tagged with an id
+/* About: Pingpong for HTML, you can insert it in anny Div tagged with an id
  *     This is a simple elegant sample for how to work with a Canvas
  */
-// Our variables we're using for setup
-const DEBUG_PONG_PARENT_GLOBAL = true;
-const DEBUG_PONG_FRAMERATE = false;
-const PONG_AUTO_CONTINUE_ON_FOCUS = false;
-// const PONG_UPDATE_INTERVAL = 1000 / 60; // go for 60 fps
-
-const STATE_COUNTDOWN = 0;
-const STATE_PLAYING = 1;
-const STATE_ENDED = 2;
-const BALL_SIZE = 8;
-const SPEED_HUMAN = 180;
-const SPEED_CPU = 210;
-
-const PADDLE_WIDTH = 10;
-const PADDLE_HEIGHT = 60;
-const PADDLE_MARGIN = 10;
-
-const KEY_ARROW_UP = 'ArrowUp';
-const KEY_ARROW_DOWN = 'ArrowDown';
-const KEY_W = 'w';
-const KEY_S = 's';
-const KEY_ENTER = 'Enter';
-const KEY_SPACEBAR = ' ';
-
 class Rectangle {
   constructor(x, y, width, height) {
     this.x = x;
@@ -57,10 +30,13 @@ class Ball extends Rectangle {
     if (this.y < 0) {
       this.y = 0;
       this.vy = -this.vy;
+      return true;
     } else if (this.y > height - this.height) {
       this.y = height - this.height;
       this.vy = - this.vy;
+      return true;
     }
+    return false;
   }
 }
 
@@ -85,41 +61,89 @@ class Paddle extends Rectangle {
   }
 }
 
-class PingPong {
+class PingPong_CTX2D {
+  static get DEBUG_PARENT_OBJECT() { return true; };
+  static get AUTO_CONTINUE_ON_FOCUS() { return false; };
+  static get SHOW_FPS_INTERVAL() { return 1000 / 4; }; // four times per second
+
+  static get STATE_COUNTDOWN() { return 0; };
+  static get STATE_PLAYING() { return 1; };
+  static get STATE_ENDED() { return 2; };
+  static get BALL_SIZE() { return 8; };
+  static get SPEED_HUMAN() { return 180; };
+  static get SPEED_CPU() { return 210; };
+
+  static get PADDLE_WIDTH() { return 10; };
+  static get PADDLE_HEIGHT() { return 60; };
+  static get PADDLE_MARGIN() { return 10; };
+
+  static get KEY_ARROW_UP() { return 'ArrowUp'; };
+  static get KEY_ARROW_DOWN() { return 'ArrowDown'; };
+  static get KEY_W() { return 'w'; };
+  static get KEY_S() { return 's'; };
+  static get KEY_ENTER() { return 'Enter'; };
+  static get KEY_SPACEBAR() { return ' '; };
+  static get KEY_ESCAPE() { return 'Escape'; };
+
   animationRequestId = 0;
   running = false;
 
-  constructor(divId, width, height, zoom) {
+  constructor(divId, width, height, zoom = 1, showFps = false) {
     this.createCanvas(divId, width, height, zoom);
+    this.canvasEl.title = "Playing: PingPong";
+    this.ctx = this.canvasEl.getContext("2d");
+    this.ctx.textAlign = "center";
 
-    if (typeof terminalAddCommand === "function") {
-      terminalAddCommand("restartpong", (t) => this.terminalRestartGame(t));
-      terminalAddCommand("printpong", (t) => t.printVar(this, "pong"));
-    }
-    if (DEBUG_PONG_FRAMERATE) {
-      // this.debugLifeLine = new DebugLifeLine(divId, width, 80, 0, 0.02, "Lifeline for timeDelta in drawCanvas()");
+    this.audioCtx = new AudioContext();
+    this.sounds = [];
+    this.sounds[0] = new Audio('./snd/glass-knock.mp3');
+    this.audioCtx.createMediaElementSource(this.sounds[0]).connect(this.audioCtx.destination);
+    this.sounds[1] = new Audio('./snd/short-success.mp3');
+    this.audioCtx.createMediaElementSource(this.sounds[1]).connect(this.audioCtx.destination);
+
+    this.showFps = showFps;
+    if (showFps) {
       // add framecounter and fps variables and html
       this.frameCounter = 0;
       this.initTime = performance.now();
       const el = document.createElement('p');
-      el.style.margin = 0;
-      el.appendChild(document.createTextNode('frame: '));
       this.frameLabel = document.createElement('span');
-      el.appendChild(this.frameLabel);
-      el.appendChild(document.createElement('br'));
-      el.appendChild(document.createTextNode('fps: '));
+      const floatRight = document.createElement('span');
+      floatRight.style = "float: right;";
+      this.fpsCounter = 0;
       this.fpsLabel = document.createElement('span');
+      el.appendChild(document.createTextNode('fps: '));
       el.appendChild(this.fpsLabel);
+      floatRight.appendChild(document.createTextNode('frame: '));
+      floatRight.appendChild(this.frameLabel);
+      el.appendChild(floatRight);
       this.divEl.appendChild(el);
     }
-    if(DEBUG_PONG_PARENT_GLOBAL){
-      window.game = this;
+
+    this.restartGame();
+    this.canvasEl.addEventListener("keydown", (e) => this.onKeyDown(e));
+    this.canvasEl.addEventListener("keyup", (e) => this.onKeyUp(e));
+    this.canvasEl.addEventListener("blur", (e) => this.onBlur(e));
+    this.canvasEl.addEventListener("focus", (e) => this.onFocus(e));
+
+    if (PingPong_CTX2D.DEBUG_PARENT_OBJECT) window.game = this;
+    if (typeof WTerminal === "function") {
+      WTerminal.terminalAddCommand("restartgame", (t) => this.terminalRestartGame(t));
+      WTerminal.terminalAddCommand("printgame", (t) => t.printVar(this, "pong"));
+      WTerminal.printLn("new PingPong: @", divId, ' ', width, 'x', height, ':', zoom, ' showFps=', showFps);
     }
 
-    // start
-    this.restartGame();
-    this.canvasEl.focus(); // this.isFocused = true;
-    this.startRunning(() => this.updateCanvas());
+    this.drawCanvas();
+  }
+
+  playSound(index) {
+    try {
+      const snd = this.sounds[index];
+      snd.currentTime = 0;
+      snd.play();
+    } catch (e) {
+      console.log(`Failed to play sound '${index}': ${e}}`)
+    }
   }
 
   restartGame() {
@@ -130,32 +154,31 @@ class PingPong {
 
   newRound() {
     this.countDown = 3; // seconds;
-    this.gameState = STATE_COUNTDOWN;
+    this.gameState = PingPong_CTX2D.STATE_COUNTDOWN;
     // randomize ball speed
     let vx = 200 + Math.random() * 100;
     let vy = -20 + Math.random() * 20;
     if (Math.random() > 0.5) vx = - vx;
     if (Math.random() > 0.5) vy = - vy;
     // generate objects
-    this.ball = new Ball(this.width / 2 - BALL_SIZE / 2, this.height / 2 - BALL_SIZE / 2,
-      BALL_SIZE, BALL_SIZE, vx, vy);
-    this.human = new Paddle(PADDLE_MARGIN, this.height / 2 - PADDLE_HEIGHT / 2,
-      PADDLE_WIDTH, PADDLE_HEIGHT);
-    this.cpu = new Paddle(this.width - PADDLE_MARGIN - PADDLE_WIDTH, this.height / 2 - PADDLE_HEIGHT / 2,
-      PADDLE_WIDTH, PADDLE_HEIGHT);
+    this.ball = new Ball(this.width / 2 - PingPong_CTX2D.BALL_SIZE / 2, this.height / 2 - PingPong_CTX2D.BALL_SIZE / 2,
+      PingPong_CTX2D.BALL_SIZE, PingPong_CTX2D.BALL_SIZE, vx, vy);
+    this.human = new Paddle(PingPong_CTX2D.PADDLE_MARGIN, this.height / 2 - PingPong_CTX2D.PADDLE_HEIGHT / 2,
+      PingPong_CTX2D.PADDLE_WIDTH, PingPong_CTX2D.PADDLE_HEIGHT);
+    this.cpu = new Paddle(this.width - PingPong_CTX2D.PADDLE_MARGIN - PingPong_CTX2D.PADDLE_WIDTH, this.height / 2 - PingPong_CTX2D.PADDLE_HEIGHT / 2,
+      PingPong_CTX2D.PADDLE_WIDTH, PingPong_CTX2D.PADDLE_HEIGHT);
 
     this.prevNow = performance.now();
   }
 
   createCanvas(divId, width = 0, height = 0, zoom = 1) {
-    //get parent, remove children, add our canvas, set canvas properties
     this.divEl = document.getElementById(divId);
+    if (this.divEl === null) throw new Error("elementId not found: " + divId);
     while (this.divEl.firstChild) {
       this.divEl.removeChild(this.divEl.lastChild);
     }
     this.canvasEl = this.divEl.appendChild(document.createElement("canvas"));
     const c = this.canvasEl;
-    c.title = "Playing: Ping pong";
     this.width = width;
     this.height = height;
     if (width > 0 && height > 0) {
@@ -164,29 +187,27 @@ class PingPong {
       c.width = width;
       c.height = height;
     }
-    // canvas input
     c.tabIndex = 0; // improtant for keyboard focus!
-    this.canvasEl.addEventListener("keydown", (e) => this.onKeyDown(e));
-    this.canvasEl.addEventListener("keyup", (e) => this.onKeyUp(e));
-    this.canvasEl.addEventListener("blur", (e) => this.onBlur(e));
-    this.canvasEl.addEventListener("focus", (e) => this.onFocus(e));
-    // canvas output
     // c.style.imageRendering = 'pixelated';
-    this.ctx = c.getContext("2d");
-    this.ctx.textAlign = "center";
   }
 
   drawCanvas() {
-    if (DEBUG_PONG_FRAMERATE) {
-      if (this.frameLabel) this.frameLabel.innerHTML = this.frameCounter++;
-      if (this.fpsLabel) {
-        const now = performance.now();
-        const diff = now - this.initTime;
+    if (this.showFps) {
+      this.frameCounter++;
+      this.fpsCounter++;
+
+      const now = performance.now();
+      const diff = now - this.initTime;
+      if (PingPong_CTX2D.SHOW_FPS_INTERVAL < diff || !this.running) {
         this.initTime = now;
         const seconds = diff / 1000;
-        const fps = 1 / seconds;
-        // this.debugLifeLine.insertValue(seconds);
-        this.fpsLabel.innerHTML = Math.round((fps + Number.EPSILON) * 100) / 100;
+        const fps = this.fpsCounter / seconds;
+        this.fpsCounter = 0;
+        if (this.frameLabel) this.frameLabel.innerHTML = this.frameCounter;
+        if (this.fpsLabel) {
+          this.fpsLabel.innerHTML = Math.round((fps + Number.EPSILON) * 100) / 100;
+          if (!this.running) this.fpsLabel.innerHTML += " (not running)";
+        }
       }
     }
     const ctx = this.ctx;
@@ -197,7 +218,7 @@ class PingPong {
     ctx.fillStyle = 'red';
     ctx.fillText(this.scoreHuman + " - " + this.scoreCpu, this.width / 2, FONT_SIZE * 2);
     //# print count down
-    if (this.gameState == STATE_COUNTDOWN) {
+    if (this.gameState == PingPong_CTX2D.STATE_COUNTDOWN) {
       ctx.font = 2 * FONT_SIZE + "px serif";
       ctx.fillText(Math.ceil(this.countDown), this.width / 2, this.height / 2);
     }
@@ -212,12 +233,12 @@ class PingPong {
     ctx.fillStyle = 'orange';
     ctx.globalAlpha = 0.3;
     ctx.beginPath();
-    ctx.arc(this.ball.prevX + BALL_SIZE / 2, this.ball.prevY + BALL_SIZE / 2, BALL_SIZE / 2, 0, Math.PI * 2, true);
+    ctx.arc(this.ball.prevX + PingPong_CTX2D.BALL_SIZE / 2, this.ball.prevY + PingPong_CTX2D.BALL_SIZE / 2, PingPong_CTX2D.BALL_SIZE / 2, 0, Math.PI * 2, true);
     ctx.fill();
     ctx.stroke();
     ctx.globalAlpha = 1;
     ctx.beginPath();
-    ctx.arc(this.ball.x + BALL_SIZE / 2, this.ball.y + BALL_SIZE / 2, BALL_SIZE / 2, 0, Math.PI * 2, true);
+    ctx.arc(this.ball.x + PingPong_CTX2D.BALL_SIZE / 2, this.ball.y + PingPong_CTX2D.BALL_SIZE / 2, PingPong_CTX2D.BALL_SIZE / 2, 0, Math.PI * 2, true);
     ctx.fill();
     ctx.stroke();
     //# draw players paddle
@@ -242,14 +263,14 @@ class PingPong {
       ctx.fillStyle = g;
       ctx.fillRect(0, y2 - 2, this.width + 1, FONT_SIZE + 5 * 2);
       ctx.strokeRect(0, y2 - 2, this.width + 1, FONT_SIZE + 5 * 2);
-      ctx.fillStyle = (this.gameState === STATE_ENDED) ? 'red' : 'gray';
+      ctx.fillStyle = (this.gameState === PingPong_CTX2D.STATE_ENDED) ? 'red' : 'gray';
       ctx.font = 4 * FONT_SIZE + "px serif";
-      let text = (this.gameState === STATE_ENDED) ? "Score!" : "Paused";
+      let text = (this.gameState === PingPong_CTX2D.STATE_ENDED) ? "Score!" : "Paused";
       ctx.fillText(text, x, y - 2 * FONT_SIZE);
       ctx.strokeText(text, x, y - 2 * FONT_SIZE);
       ctx.fillStyle = this.isFocused ? 'goldenrod' : 'lightgray';
       ctx.font = FONT_SIZE + "px serif";
-      text = this.isFocused ? `Press space or enter to ${(this.gameState === STATE_ENDED) ? "start next round" : "continue"}.` : "Click here to continue. (unfocused)";
+      text = this.isFocused ? `Press space or enter to ${(this.gameState === PingPong_CTX2D.STATE_ENDED) ? "start next round" : "continue"}.` : "Click here to continue. (unfocused)";
       ctx.strokeText(text, x, y2 + FONT_SIZE);
       ctx.fillText(text, x, y2 + FONT_SIZE);
     }
@@ -260,7 +281,7 @@ class PingPong {
     const timeDelta = (now - this.prevNow) / 1000; //timeDelta = (milli - milli) / toSeconds
     this.prevNow = now;
     //#state switch
-    if (this.gameState == STATE_COUNTDOWN) {
+    if (this.gameState == PingPong_CTX2D.STATE_COUNTDOWN) {
       this.human.move(timeDelta);
       this.human.borderTopAndBottom(this.height);
 
@@ -269,26 +290,30 @@ class PingPong {
 
       this.countDown -= timeDelta;//PONG_UPDATE_INTERVAL;
       if (this.countDown < 0) {
-        this.gameState = STATE_PLAYING;
+        this.gameState = PingPong_CTX2D.STATE_PLAYING;
       }
-    } else if (this.gameState == STATE_PLAYING) {
+    } else if (this.gameState == PingPong_CTX2D.STATE_PLAYING) {
       //cpu actions
       if (this.ball.y + this.ball.height / 2 < this.cpu.y + this.cpu.height / 2) {
-        this.cpu.vy = -SPEED_CPU;
+        this.cpu.vy = -PingPong_CTX2D.SPEED_CPU;
       } else if (this.ball.y > this.cpu.y + this.cpu.height / 2) {
-        this.cpu.vy = SPEED_CPU;
+        this.cpu.vy = PingPong_CTX2D.SPEED_CPU;
       } else {
         this.cpu.vy = 0;
       }
 
       //move ball and paddles
       this.ball.move(timeDelta);
-      this.ball.borderTopAndBottom(this.height);
+      if (this.ball.borderTopAndBottom(this.height)) {
+        this.playSound(0);
+      }
       //Horizontal
       if (this.ball.x < 0) {
         this.win(0);
+        this.playSound(1);
       } else if (this.ball.x > this.width - this.ball.width) {
         this.win(1);
+        this.playSound(1);
       }
 
       this.human.move(timeDelta);
@@ -305,6 +330,7 @@ class PingPong {
           this.ball.vx = this.ball.vx * -1.05;
           this.ball.x = this.human.x + this.human.width;
           this.ball.vy += ((this.ball.height / 2 + this.ball.y) - (this.human.height / 2 + this.human.y)) * 10;
+          this.playSound(0);
         }
       }
 
@@ -316,6 +342,7 @@ class PingPong {
           this.ball.x = this.cpu.x - this.ball.width;
           let temp = ((this.ball.height / 2 + this.ball.y) - (this.cpu.height / 2 + this.cpu.y)) * 10;
           this.ball.vy += temp;
+          this.playSound(0);
         }
       }
     }
@@ -331,13 +358,13 @@ class PingPong {
     if (this.animationRequestId != 0) cancelAnimationFrame(this.animationRequestId);
     this.running = true;
     this.prevNow = performance.now();
-    if (DEBUG_PONG_FRAMERATE) {
+    if (this.showFps) {
       this.initTime = performance.now();
     }
     this.animationRequestId = requestAnimationFrame(fn);
   }
 
-  stopRunning() {
+  close() {
     if (this.animationRequestId != 0) {
       cancelAnimationFrame(this.animationRequestId);
       this.animationRequestId = 0;
@@ -346,11 +373,11 @@ class PingPong {
   }
 
   pausePlayGame() {
-    if (this.gameState == STATE_ENDED) return;
+    if (this.gameState == PingPong_CTX2D.STATE_ENDED) return;
     this.running = !this.running;
     if (this.running) {
       this.startRunning(() => this.updateCanvas());
-    } 
+    }
   }
 
   terminalPrintGame(term) {
@@ -366,29 +393,34 @@ class PingPong {
 
   win(winner) {
     this.running = false; //this.stopRunning();
-    this.gameState = STATE_ENDED;
+    this.gameState = PingPong_CTX2D.STATE_ENDED;
     if (winner == 0) {
       this.scoreCpu++;
-      if (typeof terminalPrintLn === "function") terminalPrintLn("CPU scored?!");
+      if (typeof WTerminal === "function") WTerminal.printLn("CPU scored?!");
     } else {
       this.scoreHuman++;
-      if (typeof terminalPrintLn === "function") terminalPrintLn("Human scored!");
+      if (typeof WTerminal === "function") WTerminal.printLn("Human scored!");
     }
-    if (typeof terminalPrintLn === "function") terminalPrintLn("Scores: Human " + this.scoreHuman + " - " + this.scoreCpu + " CPU");
+    if (typeof WTerminal === "function") WTerminal.printL("Scores: Human " + this.scoreHuman + " - " + this.scoreCpu + " CPU");
   }
 
   onKeyDown(e) {
-    if (e.key == KEY_ARROW_UP || e.key == KEY_W) {
-      this.human.vy = -SPEED_HUMAN;
+    if (e.key == PingPong_CTX2D.KEY_ESCAPE) {
+      if (this.running) this.pausePlayGame()
       e.preventDefault();
       return false;
-    } else if (e.key == KEY_ARROW_DOWN || e.key == KEY_S) {
-      this.human.vy = SPEED_HUMAN;
+    }
+    if (e.key == PingPong_CTX2D.KEY_ARROW_UP || e.key == PingPong_CTX2D.KEY_W) {
+      this.human.vy = -PingPong_CTX2D.SPEED_HUMAN;
       e.preventDefault();
       return false;
-    } else if (e.key == KEY_ENTER || e.key == KEY_SPACEBAR) {
+    } else if (e.key == PingPong_CTX2D.KEY_ARROW_DOWN || e.key == PingPong_CTX2D.KEY_S) {
+      this.human.vy = PingPong_CTX2D.SPEED_HUMAN;
+      e.preventDefault();
+      return false;
+    } else if (e.key == PingPong_CTX2D.KEY_ENTER || e.key == PingPong_CTX2D.KEY_SPACEBAR) {
       //# next round/pause/play
-      if (this.gameState == STATE_ENDED) {
+      if (this.gameState == PingPong_CTX2D.STATE_ENDED) {
         this.newRound();
         this.startRunning(() => this.updateCanvas());
       } else {
@@ -401,11 +433,11 @@ class PingPong {
   }
 
   onKeyUp(e) {
-    if (e.key == KEY_ARROW_UP || e.key == KEY_W) {
+    if (e.key == PingPong_CTX2D.KEY_ARROW_UP || e.key == PingPong_CTX2D.KEY_W) {
       this.human.vy = 0;
       e.preventDefault();
       return false;
-    } else if (e.key == KEY_ARROW_DOWN || e.key == KEY_S) {
+    } else if (e.key == PingPong_CTX2D.KEY_ARROW_DOWN || e.key == PingPong_CTX2D.KEY_S) {
       this.human.vy = 0;
       e.preventDefault();
       return false;
@@ -426,7 +458,7 @@ class PingPong {
   onFocus() {
     this.isFocused = true;
     this.canvasEl.style.borderColor = "red";
-    if (!this.running && PONG_AUTO_CONTINUE_ON_FOCUS) {
+    if (!this.running && PingPong_CTX2D.AUTO_CONTINUE_ON_FOCUS) {
       this.pausePlayGame();
     } else {
       this.drawCanvas();
@@ -434,6 +466,6 @@ class PingPong {
   }
 }
 
-function startPingPong(divId, width = 480,  height = 320, zoom = 1) {
-  return new PingPong(divId, width, height, zoom);
+function startPingPong(divId, width = 480, height = 320, zoom = 1, showFps = true) {
+  return new PingPong_CTX2D(divId, width, height, zoom, showFps);
 }

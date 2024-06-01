@@ -1,188 +1,191 @@
 /* Author: Ward Truyen
-* Version: 1.2.1
+* Version: 1.3.0
 * About:   This started as a library of functions for output/printing to a 'terminal'
 *          But then the terminal got bigger and more fun!
 */
-
-//TERMINAL const
-const TERMINAL_VERSION = "1.2.1" // terminal version, duh.
-//css & html element relations:
-const TERMINAL_CSS_LINK_URL = "../term/terminal.css"; // the link to auto insert when terminal initializes and TERMINAL_AUTO_INSERT_CSS = true
-const TERMINAL_CSS_LINK_ID = "terminal-css";
-const TERMINAL_BACKGROUND_CLASS = "terminal-background"; // blurred background div class, contains it all, hides it all.
-const TERMINAL_CONTAINER_CLASS = "terminal-container"; // container div class for all the terminal elements.
-const TERMINAL_OUTPUT_CLASS = "terminal-output"; // the class from the <pre> tag where we will to print to.
-const TERMINAL_INPUT_CLASS = "terminal-input"; // <input type text> class.
-const TERMINAL_VISIBLE_CLASS = "terminal-visible"; // the class that (by default) hides the terminal when set to the terminal-background div.
-//globals (for fun experiments)
-const TERMINAL_GLOBAL_LAST_RESULT = true; // when true: creates global terminal variable lastResult when a command reurns something
-const TERMINAL_GLOBAL_LAST_ERROR = true; // when true: creates global terminal variable lastError when a command throws an error
-const TERMINAL_GLOBAL_HISTORY = false; // when true: creates global terminal variable history and stores entered commands
-const TERMINAL_GLOBAL_TEST_VARIABLES = false; // when true: adds extra global terminal variables for testing printVar (commands: gg, terminal)
-//start up values: auto insert & logo print
-const TERMINAL_AUTO_INSERT_DROPDOWN = false; // when true: automaticly inserts a hidden div containing the terminal in html.body
-const TERMINAL_AUTO_INSERT_CSS = true; // when true: automaticly inserts a stylesheet-link in the html.head
-const TERMINAL_PRINT_LOGO = true;
-//Options: open/close
-const TERMINAL_KEY_OPEN = 'Backquote'; // 'Backquote' is the event.code to look for on keyDown to open the terminal.
-const TERMINAL_KEY_OPEN_CTRL = false; // When true: ctrl-key must be pressed together with TERMINAL_KEY_OPEN.
-const TERMINAL_KEY_CLOSE = 'Escape'; // 'Escape' is the event.code to look for on keyDown to close the terminal.
-const TERMINAL_KEY_HISTORY = 'ArrowUp'; // 'ArrowUp' is the event.code to look for on keyDown of the input-field to get previous command'
-//Options: output
-const TERMINAL_PRINT_TO_CONSOLE_LOG = false; // when true: printing logs to console too.
-//Options: input
-const TERMINAL_SLASH_COMMANDS = false; // when true: all the commands start with a forward slash.
-const TERMINAL_INPUT_STRICT = true; // when true: input commands must strictly match.
-const TERMINAL_PRINT_ALIAS_CHANGE = false; // when true: prints the change when an alias is used
-const TERMINAL_PRINT_INNER_COMMANDS = false; // when true: prints the multiple-commands after && split
-const TERMINAL_PRINT_COMMAND_RETURN = false; // when true: prints returned value of executed command, if anny
-const TERMINAL_MAX_HISTORY = 32; // the maximum length of the history we keep
-//Options: extensions
-const TERMINAL_PRINT_ALIAS_ADD = false; // when true: prints anny added alias
-const TERMINAL_PRINT_EXTENSION_ADD = false; // when true: prints anny extension command names that are added
-//Options; TPO aka terminalPrintObject const
-const TPO_UNKNOWN_OBJECT_PRINT = false; // when true and printVar detects an empty unkown object, then it prints prototype stuff
-const TPO_OBJECT_PREFIX = "|  "; // when printVar is printing keys of an object, this is added in front.
-const TPO_SPECIAL_PREFIX = " *" + TPO_OBJECT_PREFIX; // when printVar is printing special (keyless or HTMLElement) objects
-const TPO_MAX_DEPTH = 8; // when printVar is gooing this deep in objects it stops
-const TPO_INNER_MAX_LENGTH = 64; // when objects in objects are bigger than this it prints an empty code block { length=100  (too long) }
-
-const createElement = function(tagName, tagAttributes, ...tagContents) {
-  const el = document.createElement(tagName);
-  if (typeof tagAttributes === 'object' && tagAttributes != null) {
-    for (let ta of Object.keys(tagAttributes)) {
-      el.setAttribute(ta, tagAttributes[ta]);
-    }
-  }
-  for (let tc of tagContents) {
-    if (typeof tc === "string") {
-      el.appendChild(document.createTextNode(tc))
-      continue;
-    } else if (typeof tc === 'object') {
-      if (tc instanceof HTMLElement) {
-        el.appendChild(tc)
-        continue;
-      }
-    }
-    el.appendChild(document.createTextNode(tc.toString()))
-  }
-  return el;
-};
-
-const splitToArguments = function(str) {
-  function _countChar(str, char) {
-    let index = str.indexOf(char);
-    let count = 0;
-    while (index != -1) {
-      count++;
-      index = str.indexOf(char, index + 1);
-    }
-    return count;
-  }
-
-  let words = str.split(" ");
-  let quoteCounts = [];
-  for (let i = 0; i < words.length; i++) {
-    quoteCounts[i] = _countChar(words[i], '"');
-  }
-  for (let i = 0; i < words.length; i++) {
-    quoteCounts[i] = quoteCounts[i] % 2;
-  }
-  let quotes = [];
-  let quotesIndex = 0;
-  let harvesting = false;
-  for (let i = 0; i < quoteCounts.length; i++) {
-    if (harvesting) {
-      quotes[quotesIndex] += " " + words[i];
-      if (quoteCounts[i] == 1) {
-        harvesting = false;
-        quotesIndex++;
-      }
-    } else {
-      if (quoteCounts[i] == 1) {
-        harvesting = true;
-        quotes[quotesIndex] = words[i];
-      }
-    }
-  }
-  for (let i = 0; i < quotes.length; i++) {
-    if (quotes[i].startsWith('"')) quotes[i] = quotes[i].replaceAll('"', '');
-  }
-  quotesIndex = 0;
-  let removing = false;
-  for (let i = quoteCounts.length - 1; i >= 0; i--) {
-    if (removing) {
-      words.splice(i, 1);
-      if (quoteCounts[i] == 1) {
-        removing = false;
-        words.splice(i, 0, quotes[quotesIndex]);//insert quote
-      }
-    } else {
-      if (quoteCounts[i] == 1) {
-        removing = true;
-        words.splice(i, 1);
-      }
-    }
-  }
-  return words;
-};
-
-const stringToValue = function(str) {
-  if (typeof str !== "string") {
-    throw new Error("StringToValue error: str must be a string!");
-  }
-  if (str === "true") return true;
-  else if (str === "false") return false;
-  else if (str.startsWith("(global)") || str.startsWith("(Global)")) {
-    return getGlobalVariable(str.substring(8));
-  } else if (str.startsWith("(number)") || str.startsWith("(Number)")) {
-    str = str.substring(8);
-    return str.includes(".") ? parseFloat(str) : parseInt(str);
-  } else if (str.startsWith("{")) {
-    return JSON.parse(str);
-  } else if (str.startsWith("(function)") || str.startsWith("(Function)")) {
-    return new Function(str.substring(10));
-  } else if (str.startsWith("'") || str.startsWith('"')) {
-    return str.substring(1, str.length - 1);
-  } else if (!isNaN(parseFloat(str)) && isFinite(str)) {
-    return str.includes(".") ? parseFloat(str) : parseInt(str);
-  } else {
-    return str;
-  }
-}
-
-const getGlobalVariable = function(gName) {
-  if (globalThis === undefined) {
-    this.printError("GetGlobal error: Missing globalThis");
-  } else {
-    if (gName == '') {
-      this.printError("GetGlobal error: Missing argument: VARIABLE_NAME");
-    } else {
-      const names = gName.split(".");
-      if (names.length == 1) {
-        return globalThis[gName];
-      } else {
-        let obj = globalThis;
-        for (let i = 0; i < names.length - 1; i++) {
-          const nobj = obj[names[i]]; // nobj is short for new object
-          if (typeof nobj === "object" && nobj !== null) obj = nobj;
-          else {
-            // let rem = names.length - 1 - i;
-            // names.splice(names.length - rem, rem);
-            // let name = names.join('.');
-            // terminalPrint('<span style="color:red;">Variable is ', nobj === null ? 'null' : 'not an object', ': </span>');
-            // this.printVar(nobj, name);
-            return;
-          };
-        }
-        return obj[names[names.length - 1]];
-      }
-    }
-  }
-};
-
 class WTerminal {
+  //TERMINAL const
+  static get VERSION() { return "1.3.0"; }; // terminal version, duh.
+  static get CSS_LINK_URL() { return "../term/wterminal.css"; }; // the link to auto insert when terminal initializes and WTerminal.AUTO_INSERT_CSS = true
+  static get CSS_LINK_ID() { return "wterminal-css"; }; // just in case we need to remove it later
+  //css & html element relations:
+  static get BACKGROUND_CLASS() { return "wterminal-background"; }; // blurred background div class, contains it all, hides it all.
+  static get CONTAINER_CLASS() { return "wterminal-container"; }; // container div class for all the terminal elements.
+  static get OUTPUT_CLASS() { return "wterminal-output"; }; // the class from the <pre> tag where we will to print to.
+  static get INPUT_CLASS() { return "wterminal-input"; }; // <input type text> class.
+  static get VISIBLE_CLASS() { return "wterminal-visible"; }; // the class that (by default) hides the terminal when set to the terminal-background div.
+  //globals (for fun experiments)
+  static get GLOBAL_LAST_RESULT() { return true; }; // when true: creates global terminal variable lastResult when a command reurns something
+  static get GLOBAL_LAST_ERROR() { return true; }; // when true: creates global terminal variable lastError when a command throws an error
+  static get GLOBAL_HISTORY() { return false; }; // when true: creates global terminal variable history and stores entered commands
+  //start up values: auto insert & logo print
+  static get AUTO_INSERT_GLOBAL_TEST_VARIABLES() { return false; }; // when true: adds extra global terminal variables for testing printVar (commands: gg, terminal)
+  static get AUTO_INSERT_DROPDOWN() { return false; }; // when true: automaticly inserts a hidden div containing the terminal in html.body
+  static get AUTO_INSERT_CSS() { return true; }; // when true: automaticly inserts a stylesheet-link in the html.head
+  static get PRINT_LOGO() { return true; }; // when true: prints the WTerminal logo after terminal construction
+  //Options: open/close
+  static get KEY_OPEN() { return 'Backquote'; }; // 'Backquote' is the event.code to look for on keyDown to open the terminal.
+  static get KEY_OPEN_CTRL() { return false; }; // When true: ctrl-key must be pressed together with WTerminal.KEY_OPEN.
+  static get KEY_CLOSE() { return 'Escape'; }; // 'Escape' is the event.code to look for on keyDown to close the terminal.
+  static get KEY_HISTORY() { return 'ArrowUp'; }; // 'ArrowUp' is the event.code to look for on keyDown of the input-field to get previous command'
+  //Options: output
+  static get PRINT_TO_CONSOLE_LOG() { return false; }; // when true: printing logs to console too.
+  //Options: input
+  static get SLASH_COMMANDS() { return false; }; // when true: all the commands start with a forward slash.
+  static get INPUT_STRICT() { return true; }; // when true: input commands must strictly match.
+  static get PRINT_ALIAS_CHANGE() { return false; }; // when true: prints the change when an alias is used
+  static get PRINT_INNER_COMMANDS() { return false; }; // when true: prints the multiple-commands after && split
+  static get PRINT_COMMAND_RETURN() { return false; }; // when true: prints returned value of executed command, if anny
+  static get MAX_HISTORY() { return 32; }; // the maximum length of the history we keep
+  //Options: extensions
+  static get PRINT_ALIAS_ADD() { return false; }; // when true: prints anny added alias
+  static get PRINT_EXTENSION_ADD() { return false; }; // when true: prints anny extension command names that are added
+  //Options; }; TPO aka terminalPrintObject static get
+  static get TPO_UNKNOWN_OBJECT_PRINT() { return false; }; // when true and printVar detects an empty unkown object, then it prints prototype stuff
+  static get TPO_OBJECT_PREFIX() { return "|  "; }; // when printVar is printing keys of an object, this is added in front.
+  static get TPO_SPECIAL_PREFIX() { return " *" + WTerminal.TPO_OBJECT_PREFIX; }; // when printVar is printing special (keyless or HTMLElement) objects
+  static get TPO_MAX_DEPTH() { return 8; }; // when printVar is gooing this deep in objects it stops
+  static get TPO_INNER_MAX_LENGTH() { return 64; }; // when objects in objects are bigger than this it prints an empty code block { length=100  (too long) }
+
   static terminals = {};
+
+  static createElement(tagName, tagAttributes, ...tagContents) {
+    const el = document.createElement(tagName);
+    if (typeof tagAttributes === 'object' && tagAttributes != null) {
+      for (let ta of Object.keys(tagAttributes)) {
+        el.setAttribute(ta, tagAttributes[ta]);
+      }
+    }
+    for (let tc of tagContents) {
+      if (typeof tc === "string") {
+        el.appendChild(document.createTextNode(tc))
+        continue;
+      } else if (typeof tc === 'object') {
+        if (tc instanceof HTMLElement) {
+          el.appendChild(tc)
+          continue;
+        }
+      }
+      el.appendChild(document.createTextNode(tc.toString()))
+    }
+    return el;
+  };
+
+  static splitToArguments(str) {
+    function _countChar(str, char) {
+      let index = str.indexOf(char);
+      let count = 0;
+      while (index != -1) {
+        count++;
+        index = str.indexOf(char, index + 1);
+      }
+      return count;
+    }
+
+    let words = str.split(" ");
+    let quoteCounts = [];
+    for (let i = 0; i < words.length; i++) {
+      quoteCounts[i] = _countChar(words[i], '"');
+    }
+    for (let i = 0; i < words.length; i++) {
+      quoteCounts[i] = quoteCounts[i] % 2;
+    }
+    let quotes = [];
+    let quotesIndex = 0;
+    let harvesting = false;
+    for (let i = 0; i < quoteCounts.length; i++) {
+      if (harvesting) {
+        quotes[quotesIndex] += " " + words[i];
+        if (quoteCounts[i] == 1) {
+          harvesting = false;
+          quotesIndex++;
+        }
+      } else {
+        if (quoteCounts[i] == 1) {
+          harvesting = true;
+          quotes[quotesIndex] = words[i];
+        }
+      }
+    }
+    for (let i = 0; i < quotes.length; i++) {
+      if (quotes[i].startsWith('"')) quotes[i] = quotes[i].replaceAll('"', '');
+    }
+    quotesIndex = 0;
+    let removing = false;
+    for (let i = quoteCounts.length - 1; i >= 0; i--) {
+      if (removing) {
+        words.splice(i, 1);
+        if (quoteCounts[i] == 1) {
+          removing = false;
+          words.splice(i, 0, quotes[quotesIndex]);//insert quote
+        }
+      } else {
+        if (quoteCounts[i] == 1) {
+          removing = true;
+          words.splice(i, 1);
+        }
+      }
+    }
+    return words;
+  };
+
+  static stringToValue(str) {
+    if (typeof str !== "string") {
+      throw new Error("StringToValue error: str must be a string!");
+    }
+    if (str === "true") return true;
+    else if (str === "false") return false;
+    else if (str.startsWith("(global)") || str.startsWith("(Global)")) {
+      return WTerminal.getGlobalVariable(str.substring(8));
+    } else if (str.startsWith("(number)") || str.startsWith("(Number)")) {
+      str = str.substring(8);
+      return str.includes(".") ? parseFloat(str) : parseInt(str);
+    } else if (str.startsWith("{")) {
+      return JSON.parse(str);
+    } else if (str.startsWith("(function)") || str.startsWith("(Function)")) {
+      return new Function(str.substring(10));
+    } else if (str.startsWith("'") || str.startsWith('"')) {
+      return str.substring(1, str.length - 1);
+    } else if (!isNaN(parseFloat(str)) && isFinite(str)) {
+      return str.includes(".") ? parseFloat(str) : parseInt(str);
+    } else {
+      return str;
+    }
+  }
+
+  static getGlobalVariable(gName) {
+    if (globalThis === undefined) {
+      throw new Error("Missing globalThis");
+      // this.printError("GetGlobal error: Missing globalThis");
+    } else {
+      if (gName == '') {
+        throw new Error("Missing argument: VARIABLE_NAME");
+        // this.printError("GetGlobal error: Missing argument: VARIABLE_NAME");
+      } else {
+        const names = gName.split(".");
+        if (names.length == 1) {
+          return globalThis[gName];
+        } else {
+          let obj = globalThis;
+          for (let i = 0; i < names.length - 1; i++) {
+            const nobj = obj[names[i]]; // nobj is short for new object
+            if (typeof nobj === "object" && nobj !== null) obj = nobj;
+            else {
+              let rem = names.length - 1 - i;
+              names.splice(names.length - rem, rem);
+              let name = names.join('.');
+              // terminalPrint('<span style="color:red;">Variable is ', nobj === null ? 'null' : 'not an object', ': </span>');
+              // this.printError(nobj === null ? 'null' : 'not an object');
+              // this.printVar(nobj, name);
+              throw new Error(name + " is " + nobj === null ? 'null' : 'not an object');
+              // return;
+            };
+          }
+          return obj[names[names.length - 1]];
+        }
+      }
+    }
+  };
 
   constructor(name, locationId, options) {
     // use name in static storage of terminals
@@ -191,16 +194,16 @@ class WTerminal {
     WTerminal.terminals[name] = this;
 
     //create terminal elements
-    const container = createElement('div', { class: TERMINAL_CONTAINER_CLASS, title: "Terminal" });
-    const output = createElement('pre', { class: TERMINAL_OUTPUT_CLASS, title: "Terminal output" });
-    const inputForm = createElement('form', { style: "display: inline;", onsubmit: "return false;" });
-    const inputLabel = createElement('label', null, "Input:");
-    const inputText = createElement('input', { class: TERMINAL_INPUT_CLASS, title: "Terminal input", type: "text", name: TERMINAL_INPUT_CLASS, placeholder: "help" });
-    const inputSubmit = createElement('input', { title: "Submit input", type: "submit", value: "Enter" });
-    const controls = createElement('span', { style: "float: right;" });
-    const btnScrollTop = createElement('button', { title: "Scroll to top" });//, "&uarr;")
+    const container = WTerminal.createElement('div', { class: WTerminal.CONTAINER_CLASS, title: "Terminal" });
+    const output = WTerminal.createElement('pre', { class: WTerminal.OUTPUT_CLASS, title: "Terminal output" });
+    const inputForm = WTerminal.createElement('form', { style: "display: inline;", onsubmit: "return false;" });
+    const inputLabel = WTerminal.createElement('label', null, "Input:");
+    const inputText = WTerminal.createElement('input', { class: WTerminal.INPUT_CLASS, title: "Terminal input", type: "text", name: WTerminal.INPUT_CLASS, placeholder: "help" });
+    const inputSubmit = WTerminal.createElement('input', { title: "Submit input", type: "submit", value: "Enter" });
+    const controls = WTerminal.createElement('span', { style: "float: right;" });
+    const btnScrollTop = WTerminal.createElement('button', { title: "Scroll to top" });//, "&uarr;")
     btnScrollTop.innerHTML = "&uarr;";
-    const btnScrollBottom = createElement('button', { title: "Scroll to bottom" });//, "&darr;")
+    const btnScrollBottom = WTerminal.createElement('button', { title: "Scroll to bottom" });//, "&darr;")
     btnScrollBottom.innerHTML = "&darr;";
     this.outputEl = output;
     this.inputTextEl = inputText;
@@ -260,10 +263,10 @@ class WTerminal {
     container.appendChild(output);
     container.appendChild(inputForm);
     if (locationId === null) {    // use location to insert terminal in a div(string id) or dropdown (null)
-      const background = createElement('div', { class: TERMINAL_BACKGROUND_CLASS, title: "Close terminal" });
+      const background = WTerminal.createElement('div', { class: WTerminal.BACKGROUND_CLASS, title: "Close terminal" });
       this.backgroundEl = background;
 
-      const btnClose = createElement('button', { title: "Close terminal" });//, "&#10006;")
+      const btnClose = WTerminal.createElement('button', { title: "Close terminal" });//, "&#10006;")
       btnClose.innerHTML = "&#10006;";
       btnClose.onclick = (e) => this.terminalClose();
       this.onDocBodyKeyDown = function(event) {
@@ -309,38 +312,37 @@ class WTerminal {
 
     // use function-options-var to overwrite default options todo: !!
     this.options = {
-
       //open/close
-      keyOpen: TERMINAL_KEY_OPEN,
-      keyOpenCtrl: TERMINAL_KEY_OPEN_CTRL,
-      keyClose: TERMINAL_KEY_CLOSE,
-      keyHistory: TERMINAL_KEY_HISTORY,
+      keyOpen: WTerminal.KEY_OPEN,
+      keyOpenCtrl: WTerminal.KEY_OPEN_CTRL,
+      keyClose: WTerminal.KEY_CLOSE,
+      keyHistory: WTerminal.KEY_HISTORY,
       //output
-      printToConsoleLog: TERMINAL_PRINT_TO_CONSOLE_LOG,
+      printToConsoleLog: WTerminal.PRINT_TO_CONSOLE_LOG,
       //input
-      slashCommands: TERMINAL_SLASH_COMMANDS,
-      inputStrict: TERMINAL_INPUT_STRICT,
-      printAliasChange: TERMINAL_PRINT_ALIAS_CHANGE,
-      printInnerCommands: TERMINAL_PRINT_INNER_COMMANDS,
-      printCommandReturn: TERMINAL_PRINT_COMMAND_RETURN,
-      maxHistory: TERMINAL_MAX_HISTORY,
+      slashCommands: WTerminal.SLASH_COMMANDS,
+      inputStrict: WTerminal.INPUT_STRICT,
+      printAliasChange: WTerminal.PRINT_ALIAS_CHANGE,
+      printInnerCommands: WTerminal.PRINT_INNER_COMMANDS,
+      printCommandReturn: WTerminal.PRINT_COMMAND_RETURN,
+      maxHistory: WTerminal.MAX_HISTORY,
       //extensions
-      printExtensionAdd: TERMINAL_PRINT_EXTENSION_ADD,
-      printAliasAdd: TERMINAL_PRINT_ALIAS_ADD,
+      printExtensionAdd: WTerminal.PRINT_EXTENSION_ADD,
+      printAliasAdd: WTerminal.PRINT_ALIAS_ADD,
       //TPO aka terminalPrintObject const
-      tpo_unknownObjectPrint: TPO_UNKNOWN_OBJECT_PRINT,
-      tpo_objectPrefix: TPO_OBJECT_PREFIX,
-      tpo_specialPrefix: TPO_SPECIAL_PREFIX,
-      tpo_maxDepth: TPO_MAX_DEPTH,
-      tpo_innerMaxLength: TPO_INNER_MAX_LENGTH,
+      tpo_unknownObjectPrint: WTerminal.TPO_UNKNOWN_OBJECT_PRINT,
+      tpo_objectPrefix: WTerminal.TPO_OBJECT_PREFIX,
+      tpo_specialPrefix: WTerminal.TPO_SPECIAL_PREFIX,
+      tpo_maxDepth: WTerminal.TPO_MAX_DEPTH,
+      tpo_innerMaxLength: WTerminal.TPO_INNER_MAX_LENGTH,
     };
 
     // finish loading: Welcome prints
     this.aliasExtensionList = {};
     this.commandListExtension = {};
     this.startupDate = new Date();
-    this.printLn(`WTerminal ${TERMINAL_VERSION} initialized on `, this.startupDate);
-    if (TERMINAL_PRINT_LOGO) {
+    this.printLn(`WTerminal ${WTerminal.VERSION} initialized on `, this.startupDate);
+    if (WTerminal.PRINT_LOGO) {
       this.printLn(" _  .  _  _____ .----..----. .-.   .-..-..-. .-.  .--.  .-.   ");
       this.printLn("| |/ \\| |[_   _]| {__ | {)  }| .`-'. ||~|| .`| | / {} \\ | |   ");
       this.printLn("|  ,-,  |  | |  | {__ | .-. \\| |\\ /| || || |\\  |/  /\\  \\| `--.");
@@ -403,7 +405,7 @@ class WTerminal {
   //#region extra-output
   /* prints out bold */
   printBold = function(text) {
-    this.printLn(createElement('b', null, text));
+    this.printLn(WTerminal.createElement('b', null, text));
   }
   /* prints out underlined */
   printTitle(title, useTags = true, char = "=") {
@@ -416,14 +418,14 @@ class WTerminal {
         }
         this.printLn(underline);
       } else {
-        this.printLn(createElement('u', null, createElement('b', null, title)));
+        this.printLn(WTerminal.createElement('u', null, WTerminal.createElement('b', null, title)));
       }
     }
   };
 
   /* prints out with red text */
   printError(...args) {
-    this.printLn(createElement('span', { style: "color: red;" }, ...args));
+    this.printLn(WTerminal.createElement('span', { style: "color: red;" }, ...args));
   };
 
   printList(list, printKeys = true) {
@@ -664,8 +666,8 @@ class WTerminal {
 
   terminalClose() {
     const terminalBackground = this.backgroundEl;
-    if (terminalBackground && terminalBackground.classList.contains(TERMINAL_VISIBLE_CLASS)) {
-      terminalBackground.classList.remove(TERMINAL_VISIBLE_CLASS);
+    if (terminalBackground && terminalBackground.classList.contains(WTerminal.VISIBLE_CLASS)) {
+      terminalBackground.classList.remove(WTerminal.VISIBLE_CLASS);
     } else if (typeof terminalBackground === "undefined") {
       this.printError("This is not a dropdown terminal.");
     }
@@ -674,75 +676,77 @@ class WTerminal {
   terminalOpen() {
     const terminalBackground = this.backgroundEl;
     if (terminalBackground === null) return;
-    if (!terminalBackground.classList.contains(TERMINAL_VISIBLE_CLASS)) {
-      terminalBackground.classList.add(TERMINAL_VISIBLE_CLASS);
+    if (!terminalBackground.classList.contains(WTerminal.VISIBLE_CLASS)) {
+      terminalBackground.classList.add(WTerminal.VISIBLE_CLASS);
     }
-    this.inputTextEl.focus();
+    // this.inputTextEl.focus();
     this.outputEl.scrollTop = this.outputEl.scrollHeight;
+    setInterval(() => this.inputTextEl.focus(), 100);
   };
 
   terminalOpenClose() {
     const terminalBackground = this.backgroundEl;
     if (terminalBackground === null) return;
-    if (!terminalBackground.classList.contains(TERMINAL_VISIBLE_CLASS)) {
-      terminalBackground.classList.add(TERMINAL_VISIBLE_CLASS);
-      this.inputTextEl.focus();
+    if (!terminalBackground.classList.contains(WTerminal.VISIBLE_CLASS)) {
+      terminalBackground.classList.add(WTerminal.VISIBLE_CLASS);
+      // this.inputTextEl.focus();
       this.outputEl.scrollTop = this.outputEl.scrollHeight;
+      setInterval(() => this.inputTextEl.focus(), 100);
     } else {
-      terminalBackground.classList.remove(TERMINAL_VISIBLE_CLASS);
+      terminalBackground.classList.remove(WTerminal.VISIBLE_CLASS);
     }
   }
 
   isTerminalOpen() {
     const terminalBackground = this.backgroundEl;
     if (terminalBackground)
-      return terminalBackground.classList.contains(TERMINAL_VISIBLE_CLASS);
+      return terminalBackground.classList.contains(WTerminal.VISIBLE_CLASS);
     return true;
   };
 
   terminalConst() {
     const c = {};
-    c.version = TERMINAL_VERSION;
+    c.version = WTerminal.VERSION;
     //css & html element relations:
-    c.cssLinkUrl = TERMINAL_CSS_LINK_URL;
-    c.cssLinkId = TERMINAL_CSS_LINK_ID;
-    c.backgroundClass = TERMINAL_BACKGROUND_CLASS;
-    c.containerClass = TERMINAL_CONTAINER_CLASS;
-    c.outputClass = TERMINAL_OUTPUT_CLASS;
-    c.inputClass = TERMINAL_INPUT_CLASS;
-    c.visibleClass = TERMINAL_VISIBLE_CLASS;
+    c.cssLinkUrl = WTerminal.CSS_LINK_URL;
+    c.cssLinkId = WTerminal.CSS_LINK_ID;
+    c.backgroundClass = WTerminal.BACKGROUND_CLASS;
+    c.containerClass = WTerminal.CONTAINER_CLASS;
+    c.outputClass = WTerminal.OUTPUT_CLASS;
+    c.inputClass = WTerminal.INPUT_CLASS;
+    c.visibleClass = WTerminal.VISIBLE_CLASS;
     //globals
-    c.globalLastResult = TERMINAL_GLOBAL_LAST_RESULT;
-    c.globalLastError = TERMINAL_GLOBAL_LAST_ERROR;
-    c.globalHistory = TERMINAL_GLOBAL_HISTORY;
-    c.globalTestVariables = TERMINAL_GLOBAL_TEST_VARIABLES;
+    c.globalLastResult = WTerminal.GLOBAL_LAST_RESULT;
+    c.globalLastError = WTerminal.GLOBAL_LAST_ERROR;
+    c.globalHistory = WTerminal.GLOBAL_HISTORY;
     //auto insert
-    c.autoInsertDropdown = TERMINAL_AUTO_INSERT_DROPDOWN;
-    c.autoInsertCSS = TERMINAL_AUTO_INSERT_CSS;
-    c.printLogo = TERMINAL_PRINT_LOGO;
+    c.globalTestVariables = WTerminal.AUTO_INSERT_GLOBAL_TEST_VARIABLES;
+    c.autoInsertDropdown = WTerminal.AUTO_INSERT_DROPDOWN;
+    c.autoInsertCSS = WTerminal.AUTO_INSERT_CSS;
+    c.printLogo = WTerminal.PRINT_LOGO;
     //Options: open/close
-    c.keyOpen = TERMINAL_KEY_OPEN;
-    c.keyOpenCtrl = TERMINAL_KEY_OPEN_CTRL;
-    c.keyClose = TERMINAL_KEY_CLOSE;
-    c.keyHistory = TERMINAL_KEY_HISTORY;
+    c.keyOpen = WTerminal.KEY_OPEN;
+    c.keyOpenCtrl = WTerminal.KEY_OPEN_CTRL;
+    c.keyClose = WTerminal.KEY_CLOSE;
+    c.keyHistory = WTerminal.KEY_HISTORY;
     //Options: output
-    c.defaultPrintToConsoleLog = TERMINAL_PRINT_TO_CONSOLE_LOG;
+    c.defaultPrintToConsoleLog = WTerminal.PRINT_TO_CONSOLE_LOG;
     //Options: input
-    c.defaultSlashCommands = TERMINAL_SLASH_COMMANDS;
-    c.defaultInputStrict = TERMINAL_INPUT_STRICT;
-    c.defaultPrintAliasChange = TERMINAL_PRINT_ALIAS_CHANGE;
-    c.defaultPrintInnerCommands = TERMINAL_PRINT_INNER_COMMANDS;
-    c.defaultPrintCommandReturn = TERMINAL_PRINT_COMMAND_RETURN;
-    c.defaultMaxHistory = TERMINAL_MAX_HISTORY;
+    c.defaultSlashCommands = WTerminal.SLASH_COMMANDS;
+    c.defaultInputStrict = WTerminal.INPUT_STRICT;
+    c.defaultPrintAliasChange = WTerminal.PRINT_ALIAS_CHANGE;
+    c.defaultPrintInnerCommands = WTerminal.PRINT_INNER_COMMANDS;
+    c.defaultPrintCommandReturn = WTerminal.PRINT_COMMAND_RETURN;
+    c.defaultMaxHistory = WTerminal.MAX_HISTORY;
     //Options: extensions
-    c.defaultPrintExtensionAdd = TERMINAL_PRINT_EXTENSION_ADD;
-    c.defaultPrintAliasAdd = TERMINAL_PRINT_ALIAS_ADD;
+    c.defaultPrintExtensionAdd = WTerminal.PRINT_EXTENSION_ADD;
+    c.defaultPrintAliasAdd = WTerminal.PRINT_ALIAS_ADD;
     //Options: TPO aka terminalPrintObject const
-    c.tpo_defaultUnknownObjectPrint = TPO_UNKNOWN_OBJECT_PRINT;
-    c.tpo_defaultObjectPrefix = TPO_OBJECT_PREFIX;
-    c.tpo_defaultSpecialPrefix = TPO_SPECIAL_PREFIX;
-    c.tpo_defaultMaxDepth = TPO_MAX_DEPTH;
-    c.tpo_defaultInnerMaxLength = TPO_INNER_MAX_LENGTH;
+    c.tpo_defaultUnknownObjectPrint = WTerminal.TPO_UNKNOWN_OBJECT_PRINT;
+    c.tpo_defaultObjectPrefix = WTerminal.TPO_OBJECT_PREFIX;
+    c.tpo_defaultSpecialPrefix = WTerminal.TPO_SPECIAL_PREFIX;
+    c.tpo_defaultMaxDepth = WTerminal.TPO_MAX_DEPTH;
+    c.tpo_defaultInnerMaxLength = WTerminal.TPO_INNER_MAX_LENGTH;
     return c;
   }
 
@@ -827,10 +831,10 @@ class WTerminal {
             term.printError(argLine.substring(3));
             return;
           } else if (argLine.charAt(1) == 'g') {
-            term.printLn(createElement('span', { style: "color: green;" }, argLine.substring(3)));
+            term.printLn(WTerminal.createElement('span', { style: "color: green;" }, argLine.substring(3)));
             return;
           } else if (argLine.charAt(1) == 'b') {
-            term.printLn(createElement('span', { style: "color: blue;" }, argLine.substring(3)));
+            term.printLn(WTerminal.createElement('span', { style: "color: blue;" }, argLine.substring(3)));
             return;
           }
         }
@@ -950,7 +954,7 @@ class WTerminal {
         if (argLine == '') {
           term.printList(term.options);
         } else {
-          let args = splitToArguments(argLine);
+          let args = WTerminal.splitToArguments(argLine);
           for (const element of args) {
             if (!element.includes("=")) {
               throw new Error("Option set error: argument is missing \"=\"");
@@ -1126,11 +1130,11 @@ class WTerminal {
     cmdLine = cmdLine.trim();
     // print input
     if (isSuperCommand) {
-      this.printLn(createElement('u', null, 'super-command#'), createElement('b', null, " ", cmdLine));
+      this.printLn(WTerminal.createElement('u', null, 'super-command#'), WTerminal.createElement('b', null, " ", cmdLine));
     } else {
       let d = new Date();
       if (this.outputEl.innerHTML != '') this.print('\n')
-      this.printLn(createElement('u', null, "(" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ")#"), createElement('b', null, " ", cmdLine));
+      this.printLn(WTerminal.createElement('u', null, "(" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ")#"), WTerminal.createElement('b', null, " ", cmdLine));
     }
     // execute
     let result;
@@ -1141,7 +1145,7 @@ class WTerminal {
         // this.printList(commands); 
         for (let command of commands) {
           command = command.trim();
-          if (this.options.printInnerCommands) this.printLn(createElement("u", null, "inner-command#"), createElement("b", null, " ", command));
+          if (this.options.printInnerCommands) this.printLn(WTerminal.createElement("u", null, "inner-command#"), WTerminal.createElement("b", null, " ", command));
           result = this._terminalCommand(command);
         }
       } else {
@@ -1153,7 +1157,7 @@ class WTerminal {
       this.printError("Command error:");
       this.printVar(e, "error");
       this.lastError = e;
-      if (TERMINAL_GLOBAL_LAST_ERROR) {
+      if (WTerminal.GLOBAL_LAST_ERROR) {
         if (typeof globalThis.terminal !== "object") {
           globalThis.terminal = {};
         }
@@ -1169,7 +1173,7 @@ class WTerminal {
     if (this.history.length > this.options.maxHistory) {
       this.history.splice(this.options.maxHistory);
     }
-    if (TERMINAL_GLOBAL_HISTORY) {
+    if (WTerminal.GLOBAL_HISTORY) {
       if (typeof globalThis.terminal !== "object") {
         globalThis.terminal = {};
       }
@@ -1213,7 +1217,7 @@ class WTerminal {
         command = al;
       }
       if (this.options.printAliasChange) {
-        this.printLn("Alias found#", createElement('b', null, command + " " + argLine));
+        this.printLn("Alias found#", WTerminal.createElement('b', null, command + " " + argLine));
       }
     }
     // execute
@@ -1233,7 +1237,7 @@ class WTerminal {
     }
     // store result
     this.lastResult = result;
-    if (TERMINAL_GLOBAL_LAST_RESULT) {
+    if (WTerminal.GLOBAL_LAST_RESULT) {
       if (typeof globalThis.terminal !== "object" && typeof result !== "undefined") {
         globalThis.terminal = {};
       }
@@ -1245,81 +1249,65 @@ class WTerminal {
     return result;
   }//-> function _terminalCommand
   //#endregion
-}
+
+  static instalDropdownTerminal() {
+    if (WTerminal.terminals.dropdown) return;
+    if (document.body) {
+      new WTerminal('dropdown', null, null);
+    } else {
+      window.addEventListener("load", () => new WTerminal('dropdown', null, null));
+    }
+  }
+
+  static open() {
+    if (WTerminal.terminals.dropdown) {
+      WTerminal.terminals.dropdown.terminalOpen();
+    } else {
+      if (confirm("Dropdown terminal is not available. Create terminal?")) {
+        instalDropdownTerminal();
+        WTerminal.terminals.dropdown.terminalOpen();
+      }
+    }
+  }
+
+}//-> class WTerminal
 
 //#region init
 //Globals
-const createTerminalGlobal = function() {
-  if (TERMINAL_GLOBAL_TEST_VARIABLES) {
-    globalThis.terminal = {};
-    globalThis.terminal.version = TERMINAL_VERSION;
-    globalThis.terminal.terminals = WTerminal.terminals;
-    globalThis.terminal.wterminal = WTerminal;
-    // terminal.options = options;
-    globalThis.terminal.testvars = {};
-    const p = globalThis.terminal.testvars;
-    p.hello = "Hello World!";
-    p.multilineStr = `one
+if (WTerminal.AUTO_INSERT_GLOBAL_TEST_VARIABLES) {
+  globalThis.terminal = {};
+  globalThis.terminal.version = WTerminal.VERSION;
+  globalThis.terminal.terminals = WTerminal.terminals;
+  globalThis.terminal.wterminal = WTerminal;
+  // terminal.options = options;
+  globalThis.terminal.testvars = {};
+  const p = globalThis.terminal.testvars;
+  p.hello = "Hello World!";
+  p.multilineStr = `one
 two
 three`;
-    p.emptyArray = [];
-    p.emptyObject = {};
-    p.newArray = new Array();
-    p.newDate = new Date();
-    p.newSet = new Set();
-    p.newMap = new Map();
-    p.testArray1 = ["three", "two", "one"];
-    p.testArray1 = ["three", 2, true, { 1: 1, '2': 2, 'three': 3 }];
-    // p.testKeys = { 1:1, '2':2, 'three':3 };// 1 is a number. 2 is a string. => at runtime keys are always strings (even in an Array)
-  }
-}
-createTerminalGlobal();
-
-const instalDropdownTerminal = function() {
-  if (WTerminal.terminals.dropdown) return;
-  if (document.body) {
-    new WTerminal('dropdown', null, null);
-  } else {
-    window.addEventListener("load", () => new WTerminal('dropdown', null, null));
-  }
+  p.emptyArray = [];
+  p.emptyObject = {};
+  p.newArray = new Array();
+  p.newDate = new Date();
+  p.newSet = new Set();
+  p.newMap = new Map();
+  p.testArray1 = ["three", "two", "one"];
+  p.testArray1 = ["three", 2, true, { 1: 1, '2': 2, 'three': 3 }];
+  // p.testKeys = { 1:1, '2':2, 'three':3 };// 1 is a number. 2 is a string. => at runtime keys are always strings (even in an Array)
 }
 
-if (TERMINAL_AUTO_INSERT_CSS) {
-  if (document.getElementById(TERMINAL_CSS_LINK_ID) === null) {
-    document.head.append(createElement(
-      'link', { id: TERMINAL_CSS_LINK_ID, rel: "stylesheet", href: TERMINAL_CSS_LINK_URL }));
+if (WTerminal.AUTO_INSERT_CSS) {
+  if (document.getElementById(WTerminal.CSS_LINK_ID) === null) {
+    document.head.append(WTerminal.createElement(
+      'link', { id: WTerminal.CSS_LINK_ID, rel: "stylesheet", href: WTerminal.CSS_LINK_URL }));
   }
 }
-if (TERMINAL_AUTO_INSERT_DROPDOWN) {
-  instalDropdownTerminal();
+if (WTerminal.AUTO_INSERT_DROPDOWN) {
+  WTerminal.instalDropdownTerminal();
 }
 //#endregion
 
-const terminalAddCommand = function(name, run, help) {
-  return WTerminal.terminalAddCommand(name, run, help);
-}
-const terminalAddAlias = function(name, alias) {
-  return WTerminal.terminalAddAlias(name, alias);
-}
-
-const terminalPrint = function(...args) {
-  WTerminal.print(...args);
-}
-const terminalPrintLn = function(...args) {
-  WTerminal.printLn(...args);
-}
-
-const terminalOpen = function() {
-  if (WTerminal.terminals.dropdown) {
-    WTerminal.terminals.dropdown.terminalOpen();
-  } else {
-    if (confirm("Dropdown terminal is not available. Create terminal?")) {
-      instalDropdownTerminal();
-      WTerminal.terminals.dropdown.terminalOpen();
-    }
-  }
-}
-
-const getTerminal = function(name) {
+const getWTerminal = function(name) {
   return WTerminal.terminals[name];
 }

@@ -7,45 +7,44 @@
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/darkmode.css" />
 
-  <script src="js/pong.js"></script>
-
-  <script src="../term/terminal.js"></script>
-  <script src="../term/terminal-autoextend.js"></script>
+  <script src="../term/wterminal.js"></script>
+  <script src="../term/wterminal-autoextend.js"></script>
 
   <script src="js/cookie.js"></script>
   <script src="js/darkmode-cookie.js"></script>
+  <script src="js/game-pong-context2d.js"></script>
 </head>
 
 <body>
   <header>
     <a href="index.html">Home</a>
     <a href="static-terminal.html">Static terminal</a>
-    <a href="terminal.html">Dropdown terminal</a>
+    <a href="dropdown.html">Dropdown terminal</a>
     <a href="pong.html">Pong</a>
   </header>
 
   <main>
     <span style="float:right">
-      <button onclick="WTerminal.terminals.dropdown.terminalOpen()">Open terminal</button>
+      <button onclick="WTerminal.open()">Open terminal</button>
       <button id="btnDarkmode" onclick="btn_darkmode_switch();">dark mode</button>
     </span>
     <h1>Game sample: Ping pong</h1>
 
-    <div id="game-area"></div>
+    <div id="game-area" class="game-area"></div>
 
     <p><b><u>How to:</u></b><br>
       Use the arrow keys up and down to move, or [W] and [S].<br>
       Press spacebar or enter, to start a next round, or to pause/resume.</p>
-    <p>To restart the game use the buttons below. Or open the terminal, type "restartpong" and press enter.</p>
-    <p>To get more information about pong open the terminal, type "printpong" and press enter.</p>
-    <p>When DEBUG_PONG_PARENT_GLOBAL is true, open the terminal, type "popvar game" and press enter.</p>
+    <p>To restart the game use the buttons below. Or open the terminal, type "restartgame" and press enter.</p>
+    <p>To get more information about pong open the terminal, type "printgame" and press enter.</p>
+    <p>When DEBUG_PARENT_OBJECT is true, open the terminal, type "popvar game" and press enter.</p>
 
     <button onclick="startPingPong('game-area');">start normal</button>
     <button onclick="startPingPong('game-area', 640, 480, 1);">start large</button>
     <button onclick="startPingPong('game-area', 320, 240, 2);">start zoomed</button>
 
     <script>
-      instalDropdownTerminal();
+      WTerminal.instalDropdownTerminal();
       startPingPong('game-area');
     </script>
   </main>
